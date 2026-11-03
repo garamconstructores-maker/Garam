@@ -234,6 +234,10 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                           <div className="relative aspect-[16/10] overflow-hidden bg-slate-900">
                             <CoverCarousel project={project} className="absolute inset-0 w-full h-full" />
 
+                            <span className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-md bg-white/90 text-brand-ink text-[11px] font-semibold tracking-wide shadow-sm pointer-events-none">
+                              {project.status}
+                            </span>
+
                             <div className="absolute inset-0 bg-brand-ink/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
                               <div className="px-3.5 py-1.5 bg-white text-brand-ink text-xs font-semibold rounded-md shadow-lg flex items-center gap-1.5">
                                 <Maximize2 className="w-3.5 h-3.5" />
