@@ -12,6 +12,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FadeIn } from './MotionReveal';
 import { CoverCarousel } from './CoverCarousel';
 
+// Portafolio curado: obras que se muestran primero en el catálogo.
+const FEATURED_IDS = ['casa-33', 'casa-am', 'fendi', 'casa-blanca-galipan'];
+
 interface ProjectsCatalogProps {
   onSelectProject: (project: Project) => void;
 }
@@ -32,7 +35,7 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
   ];
 
   const filteredProjects = useMemo(() => {
-    return PROJECTS.filter((p) => {
+    const filtered = PROJECTS.filter((p) => {
       const matchesCategory =
         selectedCategory === 'Todos' || p.category === selectedCategory;
       const matchesSearch =
@@ -43,6 +46,13 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
 
       return matchesCategory && matchesSearch;
     });
+
+    // Obras destacadas primero, en el orden definido; el resto conserva su orden.
+    const rank = (id: string) => {
+      const index = FEATURED_IDS.indexOf(id);
+      return index === -1 ? FEATURED_IDS.length : index;
+    };
+    return [...filtered].sort((a, b) => rank(a.id) - rank(b.id));
   }, [selectedCategory, searchQuery]);
 
   return (
