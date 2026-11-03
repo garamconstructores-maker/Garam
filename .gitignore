@@ -10,3 +10,6 @@ data/leads.json
 
 # Fotos originales descargadas de Drive (no van a git)
 fotos-fuente/
+
+# Originales que se procesan con scripts/procesar-medios.mjs (no van a git)
+medios-entrada/

@@ -1,4 +1,4 @@
-import { Project, ServiceItem, ValuePillar, SlideData } from '../types/portfolio';
+import { Project, ProjectMedia, ServiceItem, ValuePillar, SlideData } from '../types/portfolio';
 
 export const COMPANY_INFO = {
   name: 'GARAM CONSTRUCTORES',
@@ -130,7 +130,7 @@ export const SERVICES: ServiceItem[] = [
   },
 ];
 
-export const PROJECTS: Project[] = [
+const BASE_PROJECTS: Project[] = [
   {
     id: 'casa-33',
     number: '01',
@@ -768,3 +768,17 @@ export const PROJECTS: Project[] = [
 
 // Legacy slide deck data purged in favor of pure web editorial architecture
 export const SLIDES_DATA: SlideData[] = [];
+
+// Galerías generadas por scripts/procesar-medios.mjs (src/media/<id>.json).
+// Si una obra no tiene archivo generado, conserva su galería de este archivo.
+const generatedMedia = import.meta.glob<{ hero?: string; gallery: ProjectMedia[] }>('../media/*.json', { eager: true, import: 'default' });
+
+export const PROJECTS: Project[] = BASE_PROJECTS.map((project) => {
+  const generated = generatedMedia[`../media/${project.id}.json`];
+  if (!generated) return project;
+  return {
+    ...project,
+    heroImage: generated.hero ?? project.heroImage,
+    gallery: generated.gallery,
+  };
+});
