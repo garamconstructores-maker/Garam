@@ -10,6 +10,7 @@ export interface ProjectMedia {
   caption: string;
   beforeUrl?: string; // For comparative urbanism or before/after
   afterUrl?: string;
+  stage?: string; // Etapa de la obra para agrupar en la ficha (p. ej. Diseño, Proceso de obra)
   videoUrl?: string; // Video MP4 del recorrido; url funciona como imagen de portada
 }
 

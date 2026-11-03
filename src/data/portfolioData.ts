@@ -273,42 +273,50 @@ export const PROJECTS: Project[] = [
         master8kUrl: '/obras/casa-am/casa-am-render-01-8k.webp',
         resolution: '3840 × 2160',
         caption: 'Render arquitectónico · 1 de 5',
+        stage: 'Diseño',
       },
       {
         type: 'video',
         url: '/obras/casa-am/video/casa-am-poster.webp',
         videoUrl: '/obras/casa-am/video/casa-am.mp4',
         caption: 'Recorrido del proyecto',
+        stage: 'Recorrido',
       },
       {
         type: 'obra',
         url: '/obras/casa-am/casa-am-obra-01.webp',
         caption: 'Avance de obra · 1 de 6',
+        stage: 'Proceso de obra',
       },
       {
         type: 'obra',
         url: '/obras/casa-am/casa-am-obra-02.webp',
         caption: 'Avance de obra · 2 de 6',
+        stage: 'Proceso de obra',
       },
       {
         type: 'obra',
         url: '/obras/casa-am/casa-am-obra-03.webp',
         caption: 'Avance de obra · 3 de 6',
+        stage: 'Proceso de obra',
       },
       {
         type: 'obra',
         url: '/obras/casa-am/casa-am-obra-04.webp',
         caption: 'Avance de obra · 4 de 6',
+        stage: 'Proceso de obra',
       },
       {
         type: 'obra',
         url: '/obras/casa-am/casa-am-obra-05.webp',
         caption: 'Avance de obra · 5 de 6',
+        stage: 'Proceso de obra',
       },
       {
         type: 'obra',
         url: '/obras/casa-am/casa-am-obra-06.webp',
         caption: 'Avance de obra · 6 de 6',
+        stage: 'Proceso de obra',
       },
       {
         type: 'render',
@@ -316,6 +324,7 @@ export const PROJECTS: Project[] = [
         master8kUrl: '/obras/casa-am/casa-am-render-02-8k.webp',
         resolution: '3840 × 2160',
         caption: 'Render arquitectónico · 2 de 5',
+        stage: 'Diseño',
       },
       {
         type: 'render',
@@ -323,6 +332,7 @@ export const PROJECTS: Project[] = [
         master8kUrl: '/obras/casa-am/casa-am-render-03-8k.webp',
         resolution: '3840 × 2160',
         caption: 'Render arquitectónico · 3 de 5',
+        stage: 'Diseño',
       },
       {
         type: 'render',
@@ -330,6 +340,7 @@ export const PROJECTS: Project[] = [
         master8kUrl: '/obras/casa-am/casa-am-render-04-8k.webp',
         resolution: '3840 × 2160',
         caption: 'Render arquitectónico · 4 de 5',
+        stage: 'Diseño',
       },
       {
         type: 'render',
@@ -337,6 +348,7 @@ export const PROJECTS: Project[] = [
         master8kUrl: '/obras/casa-am/casa-am-render-05-8k.webp',
         resolution: '3840 × 2160',
         caption: 'Render arquitectónico · 5 de 5',
+        stage: 'Diseño',
       },
     ],
   },
