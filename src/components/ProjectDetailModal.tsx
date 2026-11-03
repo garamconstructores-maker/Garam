@@ -147,7 +147,17 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             {/* Selected Active Media Viewer */}
             {activeMedia && (
               <div className="space-y-2">
-                {activeMedia.type === 'antes_despues' ? (
+                {activeMedia.videoUrl ? (
+                  <video
+                    src={activeMedia.videoUrl}
+                    poster={activeMedia.url}
+                    controls
+                    playsInline
+                    preload="metadata"
+                    aria-label={activeMedia.caption}
+                    className="w-full aspect-[16/9] rounded-xl bg-slate-900 border border-brand-stone object-contain"
+                  />
+                ) : activeMedia.type === 'antes_despues' ? (
                   <BeforeAfterSlider
                     beforeImage={activeMedia.beforeUrl || activeMedia.url}
                     afterImage={activeMedia.afterUrl || activeMedia.url}
@@ -220,6 +230,11 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       onError={(e) => handleImageError(e, project.heroImage)}
                     />
+                    {media.videoUrl && (
+                      <span className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/60 text-white text-[10px] font-semibold">
+                        ▶ Video
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>

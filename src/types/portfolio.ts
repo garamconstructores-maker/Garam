@@ -3,13 +3,14 @@ export type ProjectCategory = 'Residencial' | 'Comercial' | 'Corporativo' | 'Sal
 export type ProjectStatus = 'Ejecutado' | 'En ejecución' | 'Por ejecutar';
 
 export interface ProjectMedia {
-  type: 'render' | 'obra' | 'antes_despues' | 'planta' | 'interior';
+  type: 'render' | 'obra' | 'antes_despues' | 'planta' | 'interior' | 'video';
   url: string;
   master8kUrl?: string;
   resolution?: string;
   caption: string;
   beforeUrl?: string; // For comparative urbanism or before/after
   afterUrl?: string;
+  videoUrl?: string; // Video MP4 del recorrido; url funciona como imagen de portada
 }
 
 export interface Project {
