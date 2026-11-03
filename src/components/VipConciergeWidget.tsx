@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MessageCircle, PhoneCall, Compass, X, ChevronRight, ShieldCheck, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { buildWhatsAppUrl } from '../config';
 
 interface VipConciergeWidgetProps {
   onOpenInquiry: () => void;
@@ -17,7 +18,7 @@ export const VipConciergeWidget: React.FC<VipConciergeWidgetProps> = ({
   const defaultWhatsAppText = encodeURIComponent(
     'Hola GARAM Constructores. Me comunico desde su portal web oficial. Deseo consultar especificaciones y disponibilidad para un proyecto de construcción / desarrollo arquitectónico.'
   );
-  const whatsAppUrl = `https://wa.me/584141234567?text=${defaultWhatsAppText}`;
+  const whatsAppUrl = buildWhatsAppUrl(defaultWhatsAppText);
 
   return (
     <aside aria-label="Canal de Atención Directa" className="fixed bottom-4 right-4 z-40 select-none sm:bottom-6 sm:right-6">
