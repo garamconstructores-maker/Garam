@@ -13,7 +13,7 @@ export const COMPANY_INFO = {
     { label: 'Obras de Alta Gama', value: '11+' },
     { label: 'Metros Cuadrados Construidos', value: '25,000+' },
     { label: 'Años de Trayectoria', value: '15+' },
-    { label: 'Cumplimiento Técnico', value: '100%' },
+    { label: 'Ciudades de Obra', value: '2' },
   ],
   contactInfo: {
     email: 'contacto@garamconstructores.com',
