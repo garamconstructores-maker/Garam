@@ -141,8 +141,8 @@ export const PROJECTS: Project[] = [
     area: '1.321 m²',
     parcelArea: '792 m²',
     status: 'Ejecutado',
-    heroImage: '/obras/casa-33-garam.jpeg',
-    heroImage8k: '/obras/casa-33-garam-8k.jpeg',
+    heroImage: '/obras/casa-33-garam.webp',
+    heroImage8k: '/obras/casa-33-garam-8k.webp',
     has8kMasters: true,
     slogan: 'Acabados, atmósfera y diseño en diálogo con el paisaje.',
     memoria:
@@ -186,37 +186,37 @@ export const PROJECTS: Project[] = [
     gallery: [
       {
         type: 'obra',
-        url: '/obras/casa-33-garam.jpeg',
-        master8kUrl: '/obras/casa-33-garam-8k.jpeg',
-        resolution: '7680 × 5360 (8K Ultra-HD)',
+        url: '/obras/casa-33-garam.webp',
+        master8kUrl: '/obras/casa-33-garam-8k.webp',
+        resolution: '3840 × 2680 (4K Ultra-HD)',
         caption: 'Casa 33 · Fachada Exterior - Volumetría gris centrada, jardines de grama y escalera helicoidal escultórica',
       },
       {
         type: 'obra',
-        url: '/obras/casa-33-exterior-garam.jpeg',
-        master8kUrl: '/obras/casa-33-exterior-garam-8k.jpeg',
-        resolution: '7680 × 7096 (8K Ultra-HD)',
+        url: '/obras/casa-33-exterior-garam.webp',
+        master8kUrl: '/obras/casa-33-exterior-garam-8k.webp',
+        resolution: '3840 × 3548 (4K Ultra-HD)',
         caption: 'Casa 33 · Patio Interior - Escalera helicoidal en acero naranja, espejo de agua y acabados en madera',
       },
       {
         type: 'obra',
-        url: '/obras/casa-33-exterior-2-garam.jpeg',
-        master8kUrl: '/obras/casa-33-exterior-2-garam-8k.jpeg',
-        resolution: '7680 × 4760 (8K Ultra-HD)',
+        url: '/obras/casa-33-exterior-2-garam.webp',
+        master8kUrl: '/obras/casa-33-exterior-2-garam-8k.webp',
+        resolution: '3840 × 2380 (4K Ultra-HD)',
         caption: 'Casa 33 · Terraza Solárium - Deck de madera con tumbonas y vista panorámica a la ciudad y montaña',
       },
       {
         type: 'obra',
-        url: '/obras/casa-33-exterior-3-garam.jpeg',
-        master8kUrl: '/obras/casa-33-exterior-3-garam-8k.jpeg',
-        resolution: '7680 × 4870 (8K Ultra-HD)',
+        url: '/obras/casa-33-exterior-3-garam.webp',
+        master8kUrl: '/obras/casa-33-exterior-3-garam-8k.webp',
+        resolution: '3840 × 2436 (4K Ultra-HD)',
         caption: 'Casa 33 · Acceso Principal - Puerta escultórica de diseño geométrico en amarillo y muro de concreto visto',
       },
       {
         type: 'interior',
-        url: '/obras/casa-33-interior-bano.jpeg',
-        master8kUrl: '/obras/casa-33-interior-bano-8k.jpeg',
-        resolution: '7680 × 4768 (8K Ultra-HD)',
+        url: '/obras/casa-33-interior-bano.webp',
+        master8kUrl: '/obras/casa-33-interior-bano-8k.webp',
+        resolution: '3840 × 2384 (4K Ultra-HD)',
         caption: 'Casa 33 · Baño Principal de Lujo - Mueble flotante en roble, grifería empotrada y mármol retroiluminado',
       },
     ],
@@ -231,7 +231,7 @@ export const PROJECTS: Project[] = [
     area: '2.476,44 m²',
     parcelArea: '2.476,44 m²',
     status: 'En ejecución',
-    heroImage: '/obras/casa-am/casa-am-fachada.jpg',
+    heroImage: '/obras/casa-am/casa-am-fachada.webp',
     slogan: 'Una arquitectura para el tiempo.',
     memoria:
       'Una vivienda concebida desde la calma, la luz y la permanencia. Una pieza que se hace paisaje, donde cada material elegido habla del oficio y del cuidado por los detalles. Presenta losas en voladizo en concreto visto, pilares metálicos esbeltos y una disposición curva que abraza la pendiente del terreno.',
@@ -269,27 +269,27 @@ export const PROJECTS: Project[] = [
     gallery: [
       {
         type: 'obra',
-        url: '/obras/casa-am/casa-am-fachada.jpg',
+        url: '/obras/casa-am/casa-am-fachada.webp',
         caption: 'Casa AM · Fachada Principal y Piscina - Volumetría curva en losas de concreto visto y pilares metálicos esbeltos',
       },
       {
         type: 'obra',
-        url: '/obras/casa-am/casa-am-voladizo-paisaje.jpg',
+        url: '/obras/casa-am/casa-am-voladizo-paisaje.webp',
         caption: 'Casa AM · Terraza Solárium Superior - Voladizo arquitectónico y área lounge con vista franca al Ávila',
       },
       {
         type: 'interior',
-        url: '/obras/casa-am/casa-am-interior-roble.jpg',
+        url: '/obras/casa-am/casa-am-interior-roble.webp',
         caption: 'Casa AM · Galería Interior - Mural escultórico en bajorrelieve sobre concreto visto y puente de losas flotantes',
       },
       {
         type: 'obra',
-        url: '/obras/casa-am/casa-am-concreto-textura.jpg',
+        url: '/obras/casa-am/casa-am-concreto-textura.webp',
         caption: 'Casa AM · Estructura en Ejecución - Forjado de concreto obra limpia y columnas metálicas con vista a la montaña',
       },
       {
         type: 'obra',
-        url: '/obras/casa-am/casa-am-avance-obra.jpg',
+        url: '/obras/casa-am/casa-am-avance-obra.webp',
         caption: 'Casa AM · Avance Aéreo de Obra - Estructura, fundaciones, losas postensadas y montaje con grúa torre',
       },
     ],
@@ -304,7 +304,7 @@ export const PROJECTS: Project[] = [
     area: 'Parcela 11.300 m²',
     parcelArea: '11.300 m²',
     status: 'En ejecución',
-    heroImage: '/obras/portfolio/p03-galipan.jpg',
+    heroImage: '/obras/portfolio/p03-galipan.webp',
     slogan: 'Habilitar la montaña: terrazas para seis cabañas y un paisaje renovado.',
     memoria:
       'Intervención urbana y de ingeniería geotécnica en el Parque Nacional El Ávila (Galipán). Comprende la conformación de 6 terrazas estabilizadas mediante muros de contención geotécnicos y vialidad interna para el desarrollo de un complejo residencial ecológico boutique.',
@@ -342,15 +342,15 @@ export const PROJECTS: Project[] = [
     gallery: [
       {
         type: 'obra',
-        url: '/obras/portfolio/p03-galipan.jpg',
+        url: '/obras/portfolio/p03-galipan.webp',
         caption: 'Casa Blanca Galipán · Urbanismo y terrazas escalonadas en ladera de montaña',
       },
       {
         type: 'antes_despues',
-        url: '/obras/portfolio/p03-galipan.jpg',
+        url: '/obras/portfolio/p03-galipan.webp',
         caption: 'Casa Blanca Galipán · Terrazas para seis cabañas boutique: registro comparativo antes y después',
-        beforeUrl: '/obras/portfolio/p03-galipan.jpg',
-        afterUrl: '/obras/portfolio/p03-galipan.jpg',
+        beforeUrl: '/obras/portfolio/p03-galipan.webp',
+        afterUrl: '/obras/portfolio/p03-galipan.webp',
       },
     ],
   },
@@ -363,7 +363,7 @@ export const PROJECTS: Project[] = [
     location: 'Altamira · Caracas',
     area: '1.250 m²',
     status: 'En ejecución',
-    heroImage: '/obras/portfolio/p04-comercial.jpg',
+    heroImage: '/obras/portfolio/p04-comercial.webp',
     slogan: 'Ingeniería estructural al servicio de un gesto arquitectónico.',
     memoria:
       'Un hito comercial de tres niveles con terraza superior en Altamira. La fachada combina elegantes arcos de doble altura vestidos con mosaico azul cobalto y acristalamiento reflejante. En el interior, la estructura metálica alberga una monumental escalera helicoidal de acero exenta.',
@@ -377,17 +377,17 @@ export const PROJECTS: Project[] = [
     gallery: [
       {
         type: 'obra',
-        url: '/obras/portfolio/p04-comercial.jpg',
+        url: '/obras/portfolio/p04-comercial.webp',
         caption: 'Tienda + Restaurante · Edificación comercial vertical en Altamira',
       },
       {
         type: 'obra',
-        url: '/obras/portfolio/p04-comercial.jpg',
+        url: '/obras/portfolio/p04-comercial.webp',
         caption: 'Tienda + Restaurante · Estructura metálica portante y escalera helicoidal en acero',
       },
       {
         type: 'obra',
-        url: '/obras/portfolio/p04-comercial.jpg',
+        url: '/obras/portfolio/p04-comercial.webp',
         caption: 'Tienda + Restaurante · Arquitectura interior y fachada monumental con arcos en mosaico cobalto',
       },
     ],
@@ -402,7 +402,7 @@ export const PROJECTS: Project[] = [
     area: 'Parcela 793,29 m²',
     parcelArea: '793,29 m²',
     status: 'Ejecutado',
-    heroImage: '/obras/portfolio/p05-fendi.jpg',
+    heroImage: '/obras/portfolio/p05-fendi.webp',
     slogan: 'Una identidad nueva, una arquitectura definitiva.',
     memoria:
       'Una intervención integral que redefine el edificio y eleva el estándar del habitar en Caracas, con acabados, sistemas y detalles del más alto nivel. Alberga tres residencias exclusivas tipo penthouse con vistas francas al Parque Nacional El Ávila.',
@@ -416,22 +416,22 @@ export const PROJECTS: Project[] = [
     gallery: [
       {
         type: 'obra',
-        url: '/obras/portfolio/p05-fendi.jpg',
+        url: '/obras/portfolio/p05-fendi.webp',
         caption: 'FENDI · Rehabilitación integral y transformación de edificio en La Castellana',
       },
       {
         type: 'obra',
-        url: '/obras/portfolio/p05-fendi.jpg',
+        url: '/obras/portfolio/p05-fendi.webp',
         caption: 'FENDI · Volumetría renovada, fachada ventilada y vista aérea panorámica',
       },
       {
         type: 'interior',
-        url: '/obras/portfolio/p05-fendi.jpg',
+        url: '/obras/portfolio/p05-fendi.webp',
         caption: 'FENDI · Interiores: tres residencias exclusivas tipo penthouse con vistas al Ávila',
       },
       {
         type: 'obra',
-        url: '/obras/portfolio/p05-fendi.jpg',
+        url: '/obras/portfolio/p05-fendi.webp',
         caption: 'FENDI · Memoria técnica: consolidación de nueva identidad arquitectónica',
       },
     ],
@@ -445,7 +445,7 @@ export const PROJECTS: Project[] = [
     location: 'Altamira · Caracas',
     area: 'Ocho residencias',
     status: 'En ejecución',
-    heroImage: '/obras/portfolio/p06-caroni.jpg',
+    heroImage: '/obras/portfolio/p06-caroni.webp',
     slogan: 'Voladizos profundos, vegetación integrada, vistas al Ávila.',
     memoria:
       'El proyecto residencial insignia de GARAM Constructores en Altamira. Ocho residencias únicas dispuestas en un edificio de arquitectura escultórica caracterizada por profundos voladizos de concreto, jardineras orgánicas integradas en fachada y quiebrasoles de madera vertical.',
@@ -459,22 +459,22 @@ export const PROJECTS: Project[] = [
     gallery: [
       {
         type: 'obra',
-        url: '/obras/portfolio/p06-caroni.jpg',
+        url: '/obras/portfolio/p06-caroni.webp',
         caption: 'Residencias Caroní · Ocho residencias exclusivas de alta gama en Altamira',
       },
       {
         type: 'obra',
-        url: '/obras/portfolio/p06-caroni.jpg',
+        url: '/obras/portfolio/p06-caroni.webp',
         caption: 'Residencias Caroní · Fachada principal y volumetría de losas suspendidas',
       },
       {
         type: 'obra',
-        url: '/obras/portfolio/p06-caroni.jpg',
+        url: '/obras/portfolio/p06-caroni.webp',
         caption: 'Residencias Caroní · Arquitectura biofílica: voladizos profundos y vegetación integrada',
       },
       {
         type: 'obra',
-        url: '/obras/portfolio/p06-caroni.jpg',
+        url: '/obras/portfolio/p06-caroni.webp',
         caption: 'Residencias Caroní · Detalle constructivo de fachada y terraza sur',
       },
     ],
@@ -490,7 +490,7 @@ export const PROJECTS: Project[] = [
     parcelArea: '844,57 m²',
     status: 'Por ejecutar',
     statusYear: '2026',
-    heroImage: '/obras/portfolio/p07-sanfrancisco.jpg',
+    heroImage: '/obras/portfolio/p07-sanfrancisco.webp',
     slogan: 'Espacios diáfanos abiertos al jardín y a la luz.',
     memoria:
       'Una propuesta de residencia unifamiliar contemporánea que replantea la relación entre interior y exterior. Un gran volumen prismático flotante sobre una planta baja totalmente acristalada que se funde con la piscina y los jardines perimetrales.',
@@ -504,17 +504,17 @@ export const PROJECTS: Project[] = [
     gallery: [
       {
         type: 'obra',
-        url: '/obras/portfolio/p07-sanfrancisco.jpg',
+        url: '/obras/portfolio/p07-sanfrancisco.webp',
         caption: 'Quinta San Francisco · Residencia unifamiliar contemporánea de alta gama',
       },
       {
         type: 'obra',
-        url: '/obras/portfolio/p07-sanfrancisco.jpg',
+        url: '/obras/portfolio/p07-sanfrancisco.webp',
         caption: 'Quinta San Francisco · Fachada principal y volumen escultórico de acceso',
       },
       {
         type: 'interior',
-        url: '/obras/portfolio/p07-sanfrancisco.jpg',
+        url: '/obras/portfolio/p07-sanfrancisco.webp',
         caption: 'Quinta San Francisco · Espacios diáfanos en doble altura integrados al jardín y a la luz',
       },
     ],
@@ -528,7 +528,7 @@ export const PROJECTS: Project[] = [
     location: 'El Rosal · Caracas',
     area: '500 m²',
     status: 'Ejecutado',
-    heroImage: '/obras/portfolio/p08-rosalp10.jpg',
+    heroImage: '/obras/portfolio/p08-rosalp10.webp',
     slogan: 'Adecuación corporativa que jerarquiza espacios y luz.',
     memoria:
       'Habilitación integral llave en mano de 500 m² de oficina corporativa en una de las torres empresariales más prestigiosas de El Rosal. Incluye áreas de recepción, sala de juntas de alta tecnología, oficinas ejecutivas y zona de open office.',
@@ -542,17 +542,17 @@ export const PROJECTS: Project[] = [
     gallery: [
       {
         type: 'obra',
-        url: '/obras/portfolio/p08-rosalp10.jpg',
+        url: '/obras/portfolio/p08-rosalp10.webp',
         caption: 'Torre El Rosal Piso 10 · Habilitación integral de oficinas corporativas llave en mano',
       },
       {
         type: 'interior',
-        url: '/obras/portfolio/p08-rosalp10.jpg',
+        url: '/obras/portfolio/p08-rosalp10.webp',
         caption: 'Torre El Rosal Piso 10 · Espacios ejecutivos: sala de juntas con domótica y despachos privados',
       },
       {
         type: 'interior',
-        url: '/obras/portfolio/p08-rosalp10.jpg',
+        url: '/obras/portfolio/p08-rosalp10.webp',
         caption: 'Torre El Rosal Piso 10 · Open Office: distribución diáfana y divisiones acústicas de vidrio',
       },
     ],
@@ -566,7 +566,7 @@ export const PROJECTS: Project[] = [
     location: 'El Rosal · Caracas',
     area: '500 m²',
     status: 'En ejecución',
-    heroImage: '/obras/portfolio/p09-rosalp6.jpg',
+    heroImage: '/obras/portfolio/p09-rosalp6.webp',
     slogan: 'Una oficina pensada en jerarquías, fluidez y eficiencia.',
     memoria:
       'Proyecto corporativo en proceso de ejecución para una firma multinacional. Destaca por sus techos técnicos industriales vistos en tono concreto y tuberías vistas, combinados con divisiones de cristal tintado y mobiliario ergonómico de vanguardia.',
@@ -580,17 +580,17 @@ export const PROJECTS: Project[] = [
     gallery: [
       {
         type: 'obra',
-        url: '/obras/portfolio/p09-rosalp6.jpg',
+        url: '/obras/portfolio/p09-rosalp6.webp',
         caption: 'Torre El Rosal Piso 6 · Oficinas corporativas de vanguardia en proceso de habilitación',
       },
       {
         type: 'interior',
-        url: '/obras/portfolio/p09-rosalp6.jpg',
+        url: '/obras/portfolio/p09-rosalp6.webp',
         caption: 'Torre El Rosal Piso 6 · Arquitectura interior: área de gerencia y módulos técnicos de apoyo',
       },
       {
         type: 'interior',
-        url: '/obras/portfolio/p09-rosalp6.jpg',
+        url: '/obras/portfolio/p09-rosalp6.webp',
         caption: 'Torre El Rosal Piso 6 · Open Office: puestos operativos de alta densidad e iluminación técnica',
       },
     ],
@@ -605,7 +605,7 @@ export const PROJECTS: Project[] = [
     area: '453,38 m²',
     levels: '4 niveles',
     status: 'Ejecutado',
-    heroImage: '/obras/portfolio/p10-candelaria.jpg',
+    heroImage: '/obras/portfolio/p10-candelaria.webp',
     slogan: 'Construir para cuidar.',
     memoria:
       'Un centro de urgencias médicas concebido con la rigurosidad y el detalle que exige el sector salud, expresión de nuestra experiencia en construcción especializada. Desarrollado en 4 niveles con instalaciones clínicas normadas.',
@@ -619,12 +619,12 @@ export const PROJECTS: Project[] = [
     gallery: [
       {
         type: 'obra',
-        url: '/obras/portfolio/p10-candelaria.jpg',
+        url: '/obras/portfolio/p10-candelaria.webp',
         caption: 'Urgencias 9·11 La Candelaria · Centro clínico especializado desarrollado en 4 niveles',
       },
       {
         type: 'interior',
-        url: '/obras/portfolio/p10-candelaria.jpg',
+        url: '/obras/portfolio/p10-candelaria.webp',
         caption: 'Urgencias 9·11 La Candelaria · Recepción curva de alto tránsito e instalaciones sanitarias normadas',
       },
     ],
@@ -639,7 +639,7 @@ export const PROJECTS: Project[] = [
     area: '437,15 m²',
     levels: '2 niveles',
     status: 'Ejecutado',
-    heroImage: '/obras/portfolio/p11-europa.jpg',
+    heroImage: '/obras/portfolio/p11-europa.webp',
     slogan: 'Funcionalidad hospitalaria al servicio de la urgencia.',
     memoria:
       'Unidad de atención inmediata ubicada en un punto estratégico neurálgico de la ciudad. Diseñada en 2 niveles con amplio hall de recepción en doble altura, boxes de tratamiento privado, área de observación de pacientes y estación de enfermería.',
@@ -653,17 +653,17 @@ export const PROJECTS: Project[] = [
     gallery: [
       {
         type: 'obra',
-        url: '/obras/portfolio/p11-europa.jpg',
+        url: '/obras/portfolio/p11-europa.webp',
         caption: 'Urgencias 9·11 Torre Europa · Centro de atención médica inmediata en Av. Francisco de Miranda',
       },
       {
         type: 'interior',
-        url: '/obras/portfolio/p11-europa.jpg',
+        url: '/obras/portfolio/p11-europa.webp',
         caption: 'Urgencias 9·11 Torre Europa · Recepción en doble altura acristalada y áreas de triaje clínico',
       },
       {
         type: 'interior',
-        url: '/obras/portfolio/p11-europa.jpg',
+        url: '/obras/portfolio/p11-europa.webp',
         caption: 'Urgencias 9·11 Torre Europa · Área de tratamiento clínico y boxes de atención médica en planta baja',
       },
     ],

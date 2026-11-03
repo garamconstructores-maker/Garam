@@ -8,7 +8,7 @@ interface HomepageHeroProps {
   onOpenInquiry: () => void;
 }
 
-const HERO_POSTER = '/obras/casa-33-garam.jpeg';
+const HERO_POSTER = '/obras/casa-33-garam.webp';
 
 const ArchitecturalBlueprint: React.FC = () => (
   <svg

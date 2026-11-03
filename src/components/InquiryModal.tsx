@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { InquiryFormData, ProjectCategory } from '../types/portfolio';
 import { X, Send, CheckCircle2, MessageCircle, ShieldCheck, Calendar, MapPin, Building, ArrowRight } from 'lucide-react';
 import { leadSchema } from '../shared/apiContracts';
+import { buildWhatsAppUrl } from '../config';
 
 interface InquiryModalProps {
   isOpen: boolean;
@@ -108,7 +109,7 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({
   const whatsAppDirectMessage = encodeURIComponent(
     `Buenas tardes. Me comunico con GARAM Constructores desde su portal web oficial. Solicito agendar una reunión técnica de factibilidad para un proyecto ${formData.projectType} en ${formData.location} (${formData.estimatedArea}).`
   );
-  const whatsAppDirectUrl = `https://wa.me/584141234567?text=${whatsAppDirectMessage}`;
+  const whatsAppDirectUrl = buildWhatsAppUrl(whatsAppDirectMessage);
 
   return (
     <div
