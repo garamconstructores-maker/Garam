@@ -56,7 +56,7 @@ const HERO_STATS = [
   { value: String(PROJECTS.length), label: 'obras en portafolio' },
   { value: '+25k', label: 'm² construidos' },
   { value: '15+', label: 'años de trayectoria' },
-  { value: '100%', label: 'rigor técnico' },
+  { value: '2', label: 'ciudades: Caracas y Galipán' },
 ];
 
 export const HomepageHero: React.FC<HomepageHeroProps> = ({
