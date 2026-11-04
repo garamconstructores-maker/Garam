@@ -1,4 +1,4 @@
-import { Project, ServiceItem, ValuePillar, SlideData } from '../types/portfolio';
+import { Project, ProjectMedia, ServiceItem, ValuePillar, SlideData } from '../types/portfolio';
 
 export const COMPANY_INFO = {
   name: 'GARAM CONSTRUCTORES',
@@ -13,7 +13,7 @@ export const COMPANY_INFO = {
     { label: 'Obras de Alta Gama', value: '11+' },
     { label: 'Metros Cuadrados Construidos', value: '25,000+' },
     { label: 'Años de Trayectoria', value: '15+' },
-    { label: 'Cumplimiento Técnico', value: '100%' },
+    { label: 'Ciudades de Obra', value: '2' },
   ],
   contactInfo: {
     email: 'contacto@garamconstructores.com',
@@ -130,7 +130,7 @@ export const SERVICES: ServiceItem[] = [
   },
 ];
 
-export const PROJECTS: Project[] = [
+const BASE_PROJECTS: Project[] = [
   {
     id: 'casa-33',
     number: '01',
@@ -231,7 +231,7 @@ export const PROJECTS: Project[] = [
     area: '2.476,44 m²',
     parcelArea: '2.476,44 m²',
     status: 'En ejecución',
-    heroImage: '/obras/casa-am/casa-am-fachada.jpg',
+    heroImage: '/obras/casa-am/casa-am-01.webp',
     slogan: 'Una arquitectura para el tiempo.',
     memoria:
       'Una vivienda concebida desde la calma, la luz y la permanencia. Una pieza que se hace paisaje, donde cada material elegido habla del oficio y del cuidado por los detalles. Presenta losas en voladizo en concreto visto, pilares metálicos esbeltos y una disposición curva que abraza la pendiente del terreno.',
@@ -268,29 +268,87 @@ export const PROJECTS: Project[] = [
     ],
     gallery: [
       {
-        type: 'obra',
-        url: '/obras/casa-am/casa-am-fachada.jpg',
-        caption: 'Casa AM · Fachada Principal y Piscina - Volumetría curva en losas de concreto visto y pilares metálicos esbeltos',
+        type: 'render',
+        url: '/obras/casa-am/casa-am-render-01.webp',
+        master8kUrl: '/obras/casa-am/casa-am-render-01-8k.webp',
+        resolution: '3840 × 2160',
+        caption: 'Render arquitectónico · 1 de 5',
+        stage: 'Diseño',
+      },
+      {
+        type: 'video',
+        url: '/obras/casa-am/video/casa-am-poster.webp',
+        videoUrl: '/obras/casa-am/video/casa-am.mp4',
+        caption: 'Recorrido del proyecto',
+        stage: 'Recorrido',
       },
       {
         type: 'obra',
-        url: '/obras/casa-am/casa-am-voladizo-paisaje.jpg',
-        caption: 'Casa AM · Terraza Solárium Superior - Voladizo arquitectónico y área lounge con vista franca al Ávila',
-      },
-      {
-        type: 'interior',
-        url: '/obras/casa-am/casa-am-interior-roble.jpg',
-        caption: 'Casa AM · Galería Interior - Mural escultórico en bajorrelieve sobre concreto visto y puente de losas flotantes',
+        url: '/obras/casa-am/casa-am-obra-01.webp',
+        caption: 'Avance de obra · 1 de 6',
+        stage: 'Proceso de obra',
       },
       {
         type: 'obra',
-        url: '/obras/casa-am/casa-am-concreto-textura.jpg',
-        caption: 'Casa AM · Estructura en Ejecución - Forjado de concreto obra limpia y columnas metálicas con vista a la montaña',
+        url: '/obras/casa-am/casa-am-obra-02.webp',
+        caption: 'Avance de obra · 2 de 6',
+        stage: 'Proceso de obra',
       },
       {
         type: 'obra',
-        url: '/obras/casa-am/casa-am-avance-obra.jpg',
-        caption: 'Casa AM · Avance Aéreo de Obra - Estructura, fundaciones, losas postensadas y montaje con grúa torre',
+        url: '/obras/casa-am/casa-am-obra-03.webp',
+        caption: 'Avance de obra · 3 de 6',
+        stage: 'Proceso de obra',
+      },
+      {
+        type: 'obra',
+        url: '/obras/casa-am/casa-am-obra-04.webp',
+        caption: 'Avance de obra · 4 de 6',
+        stage: 'Proceso de obra',
+      },
+      {
+        type: 'obra',
+        url: '/obras/casa-am/casa-am-obra-05.webp',
+        caption: 'Avance de obra · 5 de 6',
+        stage: 'Proceso de obra',
+      },
+      {
+        type: 'obra',
+        url: '/obras/casa-am/casa-am-obra-06.webp',
+        caption: 'Avance de obra · 6 de 6',
+        stage: 'Proceso de obra',
+      },
+      {
+        type: 'render',
+        url: '/obras/casa-am/casa-am-render-02.webp',
+        master8kUrl: '/obras/casa-am/casa-am-render-02-8k.webp',
+        resolution: '3840 × 2160',
+        caption: 'Render arquitectónico · 2 de 5',
+        stage: 'Diseño',
+      },
+      {
+        type: 'render',
+        url: '/obras/casa-am/casa-am-render-03.webp',
+        master8kUrl: '/obras/casa-am/casa-am-render-03-8k.webp',
+        resolution: '3840 × 2160',
+        caption: 'Render arquitectónico · 3 de 5',
+        stage: 'Diseño',
+      },
+      {
+        type: 'render',
+        url: '/obras/casa-am/casa-am-render-04.webp',
+        master8kUrl: '/obras/casa-am/casa-am-render-04-8k.webp',
+        resolution: '3840 × 2160',
+        caption: 'Render arquitectónico · 4 de 5',
+        stage: 'Diseño',
+      },
+      {
+        type: 'render',
+        url: '/obras/casa-am/casa-am-render-05.webp',
+        master8kUrl: '/obras/casa-am/casa-am-render-05-8k.webp',
+        resolution: '3840 × 2160',
+        caption: 'Render arquitectónico · 5 de 5',
+        stage: 'Diseño',
       },
     ],
   },
@@ -346,11 +404,34 @@ export const PROJECTS: Project[] = [
         caption: 'Casa Blanca Galipán · Urbanismo y terrazas escalonadas en ladera de montaña',
       },
       {
-        type: 'antes_despues',
-        url: '/obras/portfolio/p03-galipan.jpg',
-        caption: 'Casa Blanca Galipán · Terrazas para seis cabañas boutique: registro comparativo antes y después',
-        beforeUrl: '/obras/portfolio/p03-galipan.jpg',
-        afterUrl: '/obras/portfolio/p03-galipan.jpg',
+        type: 'obra',
+        url: '/obras/casa-blanca-galipan/casa-blanca-01.webp',
+        caption: 'Casa Blanca Galipán · Vista aérea 1 de 6',
+      },
+      {
+        type: 'obra',
+        url: '/obras/casa-blanca-galipan/casa-blanca-02.webp',
+        caption: 'Casa Blanca Galipán · Vista aérea 2 de 6',
+      },
+      {
+        type: 'obra',
+        url: '/obras/casa-blanca-galipan/casa-blanca-03.webp',
+        caption: 'Casa Blanca Galipán · Vista aérea 3 de 6',
+      },
+      {
+        type: 'obra',
+        url: '/obras/casa-blanca-galipan/casa-blanca-04.webp',
+        caption: 'Casa Blanca Galipán · Vista aérea 4 de 6',
+      },
+      {
+        type: 'obra',
+        url: '/obras/casa-blanca-galipan/casa-blanca-05.webp',
+        caption: 'Casa Blanca Galipán · Vista aérea 5 de 6',
+      },
+      {
+        type: 'obra',
+        url: '/obras/casa-blanca-galipan/casa-blanca-06.webp',
+        caption: 'Casa Blanca Galipán · Vista aérea 6 de 6',
       },
     ],
   },
@@ -421,18 +502,33 @@ export const PROJECTS: Project[] = [
       },
       {
         type: 'obra',
-        url: '/obras/portfolio/p05-fendi.jpg',
-        caption: 'FENDI · Volumetría renovada, fachada ventilada y vista aérea panorámica',
-      },
-      {
-        type: 'interior',
-        url: '/obras/portfolio/p05-fendi.jpg',
-        caption: 'FENDI · Interiores: tres residencias exclusivas tipo penthouse con vistas al Ávila',
+        url: '/obras/fendi/fendi-01.webp',
+        caption: 'FENDI · Registro de obra 1 de 6',
       },
       {
         type: 'obra',
-        url: '/obras/portfolio/p05-fendi.jpg',
-        caption: 'FENDI · Memoria técnica: consolidación de nueva identidad arquitectónica',
+        url: '/obras/fendi/fendi-02.webp',
+        caption: 'FENDI · Registro de obra 2 de 6',
+      },
+      {
+        type: 'obra',
+        url: '/obras/fendi/fendi-03.webp',
+        caption: 'FENDI · Registro de obra 3 de 6',
+      },
+      {
+        type: 'obra',
+        url: '/obras/fendi/fendi-04.webp',
+        caption: 'FENDI · Registro de obra 4 de 6',
+      },
+      {
+        type: 'obra',
+        url: '/obras/fendi/fendi-05.webp',
+        caption: 'FENDI · Registro de obra 5 de 6',
+      },
+      {
+        type: 'obra',
+        url: '/obras/fendi/fendi-06.webp',
+        caption: 'FENDI · Registro de obra 6 de 6',
       },
     ],
   },
@@ -672,3 +768,17 @@ export const PROJECTS: Project[] = [
 
 // Legacy slide deck data purged in favor of pure web editorial architecture
 export const SLIDES_DATA: SlideData[] = [];
+
+// Galerías generadas por scripts/procesar-medios.mjs (src/media/<id>.json).
+// Si una obra no tiene archivo generado, conserva su galería de este archivo.
+const generatedMedia = import.meta.glob<{ hero?: string; gallery: ProjectMedia[] }>('../media/*.json', { eager: true, import: 'default' });
+
+export const PROJECTS: Project[] = BASE_PROJECTS.map((project) => {
+  const generated = generatedMedia[`../media/${project.id}.json`];
+  if (!generated) return project;
+  return {
+    ...project,
+    heroImage: generated.hero ?? project.heroImage,
+    gallery: generated.gallery,
+  };
+});

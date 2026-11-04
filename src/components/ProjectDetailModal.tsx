@@ -32,6 +32,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
   const [activeMediaIdx, setActiveMediaIdx] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [activeStage, setActiveStage] = useState<string | null>(null);
+  const stages = Array.from(new Set((project?.gallery ?? []).map((media) => media.stage).filter(Boolean))) as string[];
+  const items = project ? (activeStage ? project.gallery.filter((media) => media.stage === activeStage) : project.gallery) : [];
 
   // Keyboard Escape and arrows dismissal/navigation
   React.useEffect(() => {
@@ -45,10 +48,10 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
           onClose();
         }
       } else if (e.key === 'ArrowRight') {
-        setActiveMediaIdx((prev) => (prev + 1) % project.gallery.length);
+        setActiveMediaIdx((prev) => (prev + 1) % items.length);
         setZoomLevel(1);
       } else if (e.key === 'ArrowLeft') {
-        setActiveMediaIdx((prev) => (prev - 1 + project.gallery.length) % project.gallery.length);
+        setActiveMediaIdx((prev) => (prev - 1 + items.length) % items.length);
         setZoomLevel(1);
       }
     };
@@ -58,7 +61,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
 
   if (!project) return null;
 
-  const activeMedia = project.gallery[activeMediaIdx] || project.gallery[0];
+  const activeMedia = items[activeMediaIdx] || items[0];
   const has8k = Boolean(activeMedia?.master8kUrl || project.has8kMasters);
   const displayUrl = isLightboxOpen && activeMedia?.master8kUrl ? activeMedia.master8kUrl : (activeMedia?.url || project.heroImage);
 
@@ -152,7 +155,42 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             {/* Selected Active Media Viewer */}
             {activeMedia && (
               <div className="space-y-2">
-                {activeMedia.type === 'antes_despues' ? (
+                {stages.length > 1 && (
+                  <div className="flex flex-wrap gap-2" role="group" aria-label="Etapas de la obra">
+                    {[null, ...stages].map((stage) => {
+                      const active = activeStage === stage;
+                      return (
+                        <button
+                          key={stage ?? "todas"}
+                          type="button"
+                          aria-pressed={active}
+                          onClick={() => {
+                            setActiveStage(stage);
+                            setActiveMediaIdx(0);
+                            setZoomLevel(1);
+                          }}
+                          className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+                            active ? "bg-brand-ink text-white border-brand-ink" : "bg-white text-brand-muted border-brand-stone hover:border-brand-ink/50"
+                          }`}
+                        >
+                          {stage ?? "Todas"}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {activeMedia.videoUrl ? (
+                  <video
+                    src={activeMedia.videoUrl}
+                    poster={activeMedia.url}
+                    controls
+                    playsInline
+                    preload="metadata"
+                    aria-label={activeMedia.caption}
+                    className="w-full aspect-[16/9] rounded-xl bg-slate-900 border border-brand-stone object-contain"
+                  />
+                ) : activeMedia.type === 'antes_despues' ? (
                   <BeforeAfterSlider
                     beforeImage={activeMedia.beforeUrl || activeMedia.url}
                     afterImage={activeMedia.afterUrl || activeMedia.url}
@@ -177,7 +215,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                     {/* Top Overlay Badge & Inspect button */}
                     <div className="absolute top-3 inset-x-3 flex items-center justify-between pointer-events-none">
                       <span className="px-3 py-1 bg-black/60 backdrop-blur-md rounded-full text-white text-[11px] font-semibold pointer-events-auto">
-                        Foto {activeMediaIdx + 1} de {project.gallery.length}
+                        Foto {activeMediaIdx + 1} de {items.length}
                       </span>
 
                       <button
@@ -206,9 +244,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             )}
 
             {/* Gallery Thumbnails Strip */}
-            {project.gallery.length > 1 && (
+            {items.length > 1 && (
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
-                {project.gallery.map((media, idx) => (
+                {items.map((media, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveMediaIdx(idx)}
@@ -226,7 +264,11 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                       onError={(e) => handleImageError(e, project.heroImage)}
                     />
-
+                    {media.videoUrl && (
+                      <span className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/60 text-white text-[10px] font-semibold">
+                        ▶ Video
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>
@@ -392,7 +434,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
               </span>
               <span className="text-white/30 hidden sm:inline">|</span>
               <span className="text-xs font-semibold text-white/90 hidden sm:inline">
-                {project.title} · Foto {activeMediaIdx + 1} de {project.gallery.length}
+                {project.title} · Foto {activeMediaIdx + 1} de {items.length}
               </span>
               {activeMedia?.resolution && (
                 <span className="px-2 py-0.5 rounded-full bg-brand-copper-light/30 border border-brand-copper-light/40 text-brand-copper-light text-[10px] font-mono font-semibold hidden md:inline">
@@ -453,11 +495,11 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             className="relative flex-1 flex items-center justify-center overflow-hidden my-3"
           >
             {/* Left Nav Arrow */}
-            {project.gallery.length > 1 && (
+            {items.length > 1 && (
               <button
                 type="button"
                 onClick={() => {
-                  setActiveMediaIdx((prev) => (prev - 1 + project.gallery.length) % project.gallery.length);
+                  setActiveMediaIdx((prev) => (prev - 1 + items.length) % items.length);
                   setZoomLevel(1);
                 }}
                 className="absolute left-2 sm:left-4 z-30 p-3 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md border border-white/20 transition-all hover:scale-110 cursor-pointer shadow-xl"
@@ -487,11 +529,11 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             </div>
 
             {/* Right Nav Arrow */}
-            {project.gallery.length > 1 && (
+            {items.length > 1 && (
               <button
                 type="button"
                 onClick={() => {
-                  setActiveMediaIdx((prev) => (prev + 1) % project.gallery.length);
+                  setActiveMediaIdx((prev) => (prev + 1) % items.length);
                   setZoomLevel(1);
                 }}
                 className="absolute right-2 sm:right-4 z-30 p-3 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md border border-white/20 transition-all hover:scale-110 cursor-pointer shadow-xl"
@@ -519,9 +561,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             </div>
 
             {/* Thumbnails strip in Lightbox */}
-            {project.gallery.length > 1 && (
+            {items.length > 1 && (
               <div className="flex items-center gap-2 overflow-x-auto pt-1 pb-1">
-                {project.gallery.map((media, idx) => (
+                {items.map((media, idx) => (
                   <button
                     key={idx}
                     type="button"

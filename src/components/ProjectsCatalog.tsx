@@ -13,6 +13,10 @@ import {
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { FadeIn } from './MotionReveal';
+import { CoverCarousel } from './CoverCarousel';
+
+// Portafolio curado: obras que se muestran primero en el catálogo.
+const FEATURED_IDS = ['casa-33', 'casa-am', 'fendi', 'casa-blanca-galipan'];
 
 interface ProjectsCatalogProps {
   onSelectProject: (project: Project) => void;
@@ -26,7 +30,6 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Per-card active photo preview map (project id -> photo idx)
-  const [cardPhotoIdx, setCardPhotoIdx] = useState<Record<string, number>>({});
 
   const categories: string[] = [
     'Todos',
@@ -40,7 +43,7 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
   const statuses: string[] = ['Todos', 'Ejecutado', 'En ejecución', 'Por ejecutar'];
 
   const filteredProjects = useMemo(() => {
-    return PROJECTS.filter((p) => {
+    const filtered = PROJECTS.filter((p) => {
       const matchesCategory =
         selectedCategory === 'Todos' || p.category === selectedCategory;
       const matchesStatus =
@@ -54,6 +57,13 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
 
       return matchesCategory && matchesStatus && matchesSearch;
     });
+
+    // Obras destacadas primero, en el orden definido; el resto conserva su orden.
+    const rank = (id: string) => {
+      const index = FEATURED_IDS.indexOf(id);
+      return index === -1 ? FEATURED_IDS.length : index;
+    };
+    return [...filtered].sort((a, b) => rank(a.id) - rank(b.id));
   }, [selectedCategory, selectedStatus, searchQuery]);
 
   return (
@@ -211,8 +221,6 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
               {/* 1. Flagship Featured Project (First Item in Asymmetric Full-Width Banner) */}
               {filteredProjects.length > 0 && (() => {
                 const flagship = filteredProjects[0];
-                const currentPhotoIdx = cardPhotoIdx[flagship.id] ?? 0;
-                const activeImgUrl = flagship.gallery[currentPhotoIdx]?.url || flagship.heroImage;
 
                 return (
                   <motion.div
@@ -225,15 +233,7 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                       
                       {/* Left: Cinematic Main Photograph */}
                       <div className="lg:col-span-7 relative min-h-[320px] lg:min-h-full bg-slate-900 overflow-hidden">
-                        <img
-                          src={activeImgUrl}
-                          alt={flagship.title}
-                          referrerPolicy="no-referrer"
-                          style={{ imageRendering: '-webkit-optimize-contrast' }}
-                          className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
-                          loading="eager"
-                          onError={(e) => handleImageError(e, flagship.heroImage)}
-                        />
+                        <CoverCarousel project={flagship} className="absolute inset-0 w-full h-full" loading="eager" />
 
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
 
@@ -252,33 +252,6 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                           </div>
                         </div>
 
-                        {/* Bottom Photo Angle Switchers on Image */}
-                        {flagship.gallery.length > 1 && (
-                          <div
-                            className="absolute bottom-4 left-4 right-4 flex items-center gap-2 overflow-x-auto p-1.5 bg-black/40 backdrop-blur-md rounded-2xl z-10 scrollbar-none"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {flagship.gallery.map((media, idx) => (
-                              <button
-                                key={idx}
-                                onClick={() => setCardPhotoIdx((prev) => ({ ...prev, [flagship.id]: idx }))}
-                                className={`relative w-16 h-11 sm:w-20 sm:h-13 rounded-xl overflow-hidden border shrink-0 transition-all cursor-pointer ${
-                                  currentPhotoIdx === idx
-                                    ? 'border-white ring-2 ring-white scale-105 opacity-100 shadow-lg'
-                                    : 'border-white/30 opacity-60 hover:opacity-100'
-                                }`}
-                                title={media.caption}
-                              >
-                                <img
-                                  src={media.url}
-                                  alt={media.caption}
-                                  style={{ imageRendering: '-webkit-optimize-contrast' }}
-                                  className="w-full h-full object-cover"
-                                />
-                              </button>
-                            ))}
-                          </div>
-                        )}
                       </div>
 
                       {/* Right: Editorial Story & Technical Specs */}
@@ -354,8 +327,6 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
               {filteredProjects.length > 1 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {filteredProjects.slice(1).map((project) => {
-                    const currentPhotoIdx = cardPhotoIdx[project.id] ?? 0;
-                    const activeImgUrl = project.gallery[currentPhotoIdx]?.url || project.heroImage;
 
                     return (
                       <motion.div
@@ -369,15 +340,7 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                           
                           {/* Project Photography */}
                           <div className="relative aspect-[16/10] overflow-hidden bg-slate-900 group">
-                            <img
-                              src={activeImgUrl}
-                              alt={project.title}
-                              referrerPolicy="no-referrer"
-                              style={{ imageRendering: '-webkit-optimize-contrast' }}
-                              className="w-full h-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
-                              loading="lazy"
-                              onError={(e) => handleImageError(e, project.heroImage)}
-                            />
+                            <CoverCarousel project={project} className="absolute inset-0 w-full h-full" />
 
 
                             <div className="absolute top-3 left-3">
@@ -395,35 +358,6 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                             </div>
                           </div>
 
-                          {/* Photo Thumbnail Strip */}
-                          {project.gallery.length > 1 && (
-                            <div
-                              className="px-6 flex items-center gap-2 overflow-x-auto py-1 scrollbar-none"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {project.gallery.map((media, idx) => (
-                                <button
-                                  key={idx}
-                                  onClick={() => setCardPhotoIdx((prev) => ({ ...prev, [project.id]: idx }))}
-                                  className={`relative w-14 h-10 sm:w-16 sm:h-11 rounded-xl overflow-hidden border shrink-0 transition-all cursor-pointer shadow-xs ${
-                                    currentPhotoIdx === idx
-                                      ? 'border-brand-ink ring-2 ring-brand-ink scale-105 shadow-md'
-                                      : 'border-brand-stone opacity-75 hover:opacity-100 hover:border-brand-ink/50'
-                                  }`}
-                                  title={media.caption}
-                                >
-                                  <img
-                                    src={media.url}
-                                    alt={media.caption}
-                                    style={{ imageRendering: '-webkit-optimize-contrast' }}
-                                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                                    onError={(e) => handleImageError(e)}
-                                  />
-
-                                </button>
-                              ))}
-                            </div>
-                          )}
 
                           {/* Text Content */}
                           <div className="p-6 pt-2 pb-6 space-y-3">
