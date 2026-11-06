@@ -14,6 +14,13 @@ import { CoverCarousel } from './CoverCarousel';
 // Portafolio curado: obras que se muestran primero en el catálogo.
 const FEATURED_IDS = ['casa-33', 'casa-am', 'fendi', 'casa-blanca-galipan'];
 
+// Agrupa el catálogo por estatus: primero lo entregado, luego lo que está en curso.
+const STATUS_GROUPS: { status: Project['status']; label: string }[] = [
+  { status: 'Ejecutado', label: 'Construidas' },
+  { status: 'En ejecución', label: 'En ejecución' },
+  { status: 'Por ejecutar', label: 'Por ejecutar' },
+];
+
 interface ProjectsCatalogProps {
   onSelectProject: (project: Project) => void;
 }
@@ -67,7 +74,7 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                   PORTAFOLIO DE OBRAS
                 </div>
                 <h2 className="font-editorial text-4xl font-normal leading-tight tracking-tight text-brand-ink text-balance sm:text-5xl">
-                  Arquitectura construida.
+                  Obras construidas y en ejecución.
                 </h2>
               </div>
 
@@ -214,9 +221,17 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
               })()}
 
               {/* Secondary Projects Grid with Individual Intersection Observer Stagger */}
-              {filteredProjects.length > 1 && (
+              {filteredProjects.length > 1 && STATUS_GROUPS.map((group) => {
+                const items = filteredProjects.slice(1).filter((p) => p.status === group.status);
+                if (items.length === 0) return null;
+                return (
+                <div key={group.status} className="space-y-6">
+                <div className="flex items-baseline gap-3 border-b border-brand-stone pb-3">
+                  <h3 className="font-editorial text-2xl font-normal text-brand-ink">{group.label}</h3>
+                  <span className="font-mono text-xs tabular-nums text-brand-muted">{items.length}</span>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                  {filteredProjects.slice(1).map((project, idx) => (
+                  {items.map((project, idx) => (
                     <FadeIn
                       key={project.id}
                       direction="up"
@@ -274,7 +289,9 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                     </FadeIn>
                   ))}
                 </div>
-              )}
+                </div>
+                );
+              })}
             </motion.div>
           )}
         </AnimatePresence>

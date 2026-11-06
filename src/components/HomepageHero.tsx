@@ -122,8 +122,8 @@ export const HomepageHero: React.FC<HomepageHeroProps> = ({
 
         <FadeIn direction="up" delay={0.2} distance={24}>
           <p className="mt-6 max-w-xl text-sm leading-relaxed text-white/80 sm:text-base lg:text-lg">
-            Construimos los espacios donde habita la excelencia, integrando promoción,
-            gerencia y construcción de principio a fin.
+            Promoción, gerencia y construcción de principio a fin: más de 25 mil m²
+            construidos en Caracas y Galipán.
           </p>
         </FadeIn>
 
