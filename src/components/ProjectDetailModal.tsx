@@ -151,7 +151,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             {activeMedia && (
               <div className="space-y-2">
                 {stages.length > 1 && (
-                  <div className="flex flex-wrap gap-2" role="group" aria-label="Etapas de la obra">
+                  <div className="flex flex-wrap gap-2" role="group" aria-label="Tipo de imagen">
                     {[null, ...stages].map((stage) => {
                       const active = activeStage === stage;
                       return (

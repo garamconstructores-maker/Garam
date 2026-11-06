@@ -5,7 +5,6 @@ import { handleImageError } from '../utils/imageFallback';
 import {
   Search,
   ArrowUpRight,
-  Maximize2,
   X,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -177,12 +176,6 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                         <div className="lg:col-span-7 relative aspect-[16/10] lg:aspect-auto lg:min-h-[400px] bg-slate-900 overflow-hidden">
                           <CoverCarousel project={flagship} className="absolute inset-0 w-full h-full" loading="eager" />
 
-                          <div className="absolute inset-0 bg-brand-ink/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
-                            <div className="px-4 py-2 bg-white text-brand-ink text-xs font-semibold rounded-md shadow-lg flex items-center gap-2">
-                              <Maximize2 className="w-3.5 h-3.5" />
-                              <span>Abrir Ficha y Galería</span>
-                            </div>
-                          </div>
                         </div>
 
                         {/* Right: Concise Editorial Overview */}
@@ -248,12 +241,6 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                               {project.status}
                             </span>
 
-                            <div className="absolute inset-0 bg-brand-ink/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
-                              <div className="px-3.5 py-1.5 bg-white text-brand-ink text-xs font-semibold rounded-md shadow-lg flex items-center gap-1.5">
-                                <Maximize2 className="w-3.5 h-3.5" />
-                                <span>Ver Obra</span>
-                              </div>
-                            </div>
                           </div>
 
                           {/* Minimalist Editorial Card Copy */}
@@ -264,7 +251,7 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                               <span>{project.location}</span>
                             </div>
 
-                            <h3 className="font-editorial text-2xl sm:text-3xl font-normal tracking-tight text-brand-ink group-hover:text-brand-copper transition-colors">
+                            <h3 className="font-editorial text-2xl sm:text-3xl font-normal leading-tight tracking-tight min-h-[2lh] text-brand-ink group-hover:text-brand-copper transition-colors">
                               {project.title}
                             </h3>
 
@@ -279,7 +266,7 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                             {project.area}
                           </span>
                           <span className="font-semibold text-brand-ink group-hover:text-brand-copper transition-colors flex items-center gap-1">
-                            <span>Explorar</span>
+                            <span>Ver ficha técnica</span>
                             <ArrowUpRight className="w-3.5 h-3.5" />
                           </span>
                         </div>
