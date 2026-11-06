@@ -5,7 +5,6 @@ import { handleImageError } from '../utils/imageFallback';
 import {
   Search,
   ArrowUpRight,
-  Maximize2,
   X,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,6 +13,13 @@ import { CoverCarousel } from './CoverCarousel';
 
 // Portafolio curado: obras que se muestran primero en el catálogo.
 const FEATURED_IDS = ['casa-33', 'casa-am', 'fendi', 'casa-blanca-galipan'];
+
+// Agrupa el catálogo por estatus: primero lo entregado, luego lo que está en curso.
+const STATUS_GROUPS: { status: Project['status']; label: string }[] = [
+  { status: 'Ejecutado', label: 'Construidas' },
+  { status: 'En ejecución', label: 'En ejecución' },
+  { status: 'Por ejecutar', label: 'Por ejecutar' },
+];
 
 interface ProjectsCatalogProps {
   onSelectProject: (project: Project) => void;
@@ -68,7 +74,7 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                   PORTAFOLIO DE OBRAS
                 </div>
                 <h2 className="font-editorial text-4xl font-normal leading-tight tracking-tight text-brand-ink text-balance sm:text-5xl">
-                  Arquitectura construida.
+                  Obras construidas y en ejecución.
                 </h2>
               </div>
 
@@ -99,7 +105,7 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
             <div
               role="group"
               aria-label="Filtrar por categoría"
-              className="flex items-center gap-1.5 overflow-x-auto scrollbar-none"
+              className="flex flex-wrap items-center gap-1.5"
             >
               {categories.map((cat) => {
                 const isActive = selectedCategory === cat;
@@ -177,12 +183,6 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                         <div className="lg:col-span-7 relative aspect-[16/10] lg:aspect-auto lg:min-h-[400px] bg-slate-900 overflow-hidden">
                           <CoverCarousel project={flagship} className="absolute inset-0 w-full h-full" loading="eager" />
 
-                          <div className="absolute inset-0 bg-brand-ink/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
-                            <div className="px-4 py-2 bg-white text-brand-ink text-xs font-semibold rounded-md shadow-lg flex items-center gap-2">
-                              <Maximize2 className="w-3.5 h-3.5" />
-                              <span>Abrir Ficha y Galería</span>
-                            </div>
-                          </div>
                         </div>
 
                         {/* Right: Concise Editorial Overview */}
@@ -221,9 +221,17 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
               })()}
 
               {/* Secondary Projects Grid with Individual Intersection Observer Stagger */}
-              {filteredProjects.length > 1 && (
+              {filteredProjects.length > 1 && STATUS_GROUPS.map((group) => {
+                const items = filteredProjects.slice(1).filter((p) => p.status === group.status);
+                if (items.length === 0) return null;
+                return (
+                <div key={group.status} className="space-y-6">
+                <div className="flex items-baseline gap-3 border-b border-brand-stone pb-3">
+                  <h3 className="font-editorial text-2xl font-normal text-brand-ink">{group.label}</h3>
+                  <span className="font-mono text-xs tabular-nums text-brand-muted">{items.length}</span>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                  {filteredProjects.slice(1).map((project, idx) => (
+                  {items.map((project, idx) => (
                     <FadeIn
                       key={project.id}
                       direction="up"
@@ -248,12 +256,6 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                               {project.status}
                             </span>
 
-                            <div className="absolute inset-0 bg-brand-ink/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
-                              <div className="px-3.5 py-1.5 bg-white text-brand-ink text-xs font-semibold rounded-md shadow-lg flex items-center gap-1.5">
-                                <Maximize2 className="w-3.5 h-3.5" />
-                                <span>Ver Obra</span>
-                              </div>
-                            </div>
                           </div>
 
                           {/* Minimalist Editorial Card Copy */}
@@ -264,7 +266,7 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                               <span>{project.location}</span>
                             </div>
 
-                            <h3 className="font-editorial text-2xl sm:text-3xl font-normal tracking-tight text-brand-ink group-hover:text-brand-copper transition-colors">
+                            <h3 className="font-editorial text-2xl sm:text-3xl font-normal leading-tight tracking-tight min-h-[2lh] text-brand-ink group-hover:text-brand-copper transition-colors">
                               {project.title}
                             </h3>
 
@@ -279,7 +281,7 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                             {project.area}
                           </span>
                           <span className="font-semibold text-brand-ink group-hover:text-brand-copper transition-colors flex items-center gap-1">
-                            <span>Explorar</span>
+                            <span>Ver ficha técnica</span>
                             <ArrowUpRight className="w-3.5 h-3.5" />
                           </span>
                         </div>
@@ -287,7 +289,9 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                     </FadeIn>
                   ))}
                 </div>
-              )}
+                </div>
+                );
+              })}
             </motion.div>
           )}
         </AnimatePresence>
