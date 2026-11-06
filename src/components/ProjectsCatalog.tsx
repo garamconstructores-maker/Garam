@@ -99,7 +99,7 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
             <div
               role="group"
               aria-label="Filtrar por categoría"
-              className="flex items-center gap-1.5 overflow-x-auto scrollbar-none"
+              className="flex flex-wrap items-center gap-1.5"
             >
               {categories.map((cat) => {
                 const isActive = selectedCategory === cat;
