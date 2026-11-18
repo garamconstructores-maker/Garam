@@ -11,9 +11,19 @@ import { AiConsultantDrawer } from './components/AiConsultantDrawer';
 import { ScrollProgressBar } from './components/ScrollProgressBar';
 import { VipConciergeWidget } from './components/VipConciergeWidget';
 import { Project } from './types/portfolio';
+import { PROJECTS } from './data/portfolioData';
+import { projectIdFromPath, projectPath } from './data/routes';
+import { HOME_TITLE, projectPageMeta } from './data/seo';
 
-export default function App() {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+const findProject = (id: string | null | undefined) => PROJECTS.find((p) => p.id === id) ?? null;
+
+interface AppProps {
+  /** Obra abierta al cargar: viene de la URL /proyectos/<id>/ (y del prerenderizado). */
+  initialProjectId?: string | null;
+}
+
+export default function App({ initialProjectId = null }: AppProps) {
+  const [selectedProject, setSelectedProject] = useState<Project | null>(() => findProject(initialProjectId));
   const [isInquiryOpen, setIsInquiryOpen] = useState<boolean>(false);
   const [selectedServiceForInquiry, setSelectedServiceForInquiry] = useState<string | undefined>(undefined);
   const [isAiConsultantOpen, setIsAiConsultantOpen] = useState<boolean>(false);
@@ -35,6 +45,22 @@ export default function App() {
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, [dismissAllModals]);
+
+  // Cada ficha tiene su URL (/proyectos/<id>/): se puede compartir, y Atrás la cierra.
+  useEffect(() => {
+    const target = selectedProject ? projectPath(selectedProject.id) : '/';
+    const onProjectPage = projectIdFromPath(window.location.pathname) !== null;
+    if ((selectedProject || onProjectPage) && window.location.pathname !== target) {
+      window.history.pushState(null, '', target);
+    }
+    document.title = selectedProject ? projectPageMeta(selectedProject).title : HOME_TITLE;
+  }, [selectedProject]);
+
+  useEffect(() => {
+    const onPopState = () => setSelectedProject(findProject(projectIdFromPath(window.location.pathname)));
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
 
   // Lock body scroll when any modal/drawer is open
   const hasAnyModalOpen = Boolean(selectedProject || isInquiryOpen || isAiConsultantOpen);

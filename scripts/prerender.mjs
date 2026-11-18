@@ -42,14 +42,36 @@ const appHtml = ssr.render();
 if (!appHtml.includes('<h1')) fail('El HTML prerenderizado no contiene <h1>');
 
 // "<" escapado para que el texto del JSON nunca pueda cerrar la etiqueta <script>.
-const jsonLd = JSON.stringify(ssr.buildJsonLd()).replace(/</g, '\\u003c');
-fs.writeFileSync(
-  indexPath,
-  template
-    .replace(SEO_HEAD_PLACEHOLDER, `${ssr.buildHeadTags()}
-    <script type="application/ld+json">${jsonLd}</script>`)
-    .replace(ROOT_PLACEHOLDER, `<div id="root">${appHtml}</div>`),
-);
+const jsonLdScript = (data) =>
+  `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`;
+const escapeAttr = (text) => text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
+// Cambia título y descripción de la plantilla (pestaña, buscadores y redes sociales).
+const withMeta = (html, { title, description }) =>
+  html
+    .replace(/<title>[^<]*<\/title>/, `<title>${escapeAttr(title)}</title>`)
+    .replace(/(<meta (?:name="description"|property="og:description"|name="twitter:description") content=")[^"]*/g, `$1${escapeAttr(description)}`)
+    .replace(/(<meta (?:property="og:title"|name="twitter:title") content=")[^"]*/g, `$1${escapeAttr(title)}`);
+
+const renderPage = (html, { path: pagePath, image, jsonLd, appHtml: body }) =>
+  html
+    .replace(SEO_HEAD_PLACEHOLDER, `${ssr.buildHeadTags(pagePath, image)}\n    ${jsonLdScript(jsonLd)}`)
+    .replace(ROOT_PLACEHOLDER, `<div id="root">${body}</div>`);
+
+fs.writeFileSync(indexPath, renderPage(template, { path: '/', jsonLd: ssr.buildJsonLd(), appHtml }));
+
+// Una página por obra (/proyectos/<id>/index.html), con su ficha abierta en el HTML.
+const pages = ssr.projectPages();
+for (const page of pages) {
+  const pageHtml = ssr.render(page.id);
+  if (!pageHtml.includes(page.meta.title.split(' · ')[0])) fail(`La página de ${page.id} no contiene el nombre de la obra`);
+  const outDir = path.join(ASSETS, ...page.path.split('/').filter(Boolean));
+  fs.mkdirSync(outDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(outDir, 'index.html'),
+    renderPage(withMeta(template, page.meta), { path: page.path, image: page.image, jsonLd: page.jsonLd, appHtml: pageHtml }),
+  );
+}
 
 // 3. Archivos para buscadores e IA.
 const today = new Date().toISOString().slice(0, 10);
@@ -60,5 +82,5 @@ fs.writeFileSync(path.join(ASSETS, 'llms.txt'), ssr.buildLlmsTxt());
 fs.rmSync(SSR_DIR, { recursive: true, force: true });
 console.log(
   `Prerenderizado: ${path.relative(ROOT, indexPath)} (${Math.round(appHtml.length / 1024)} KB de HTML), ` +
-    `${images.length} imágenes verificadas, robots.txt, sitemap.xml y llms.txt`,
+    `${pages.length} páginas de obra, ${images.length} imágenes verificadas, robots.txt, sitemap.xml y llms.txt`,
 );
