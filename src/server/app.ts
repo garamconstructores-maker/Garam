@@ -4,7 +4,6 @@ import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
 import { count, desc } from 'drizzle-orm';
 import { db } from './db/index.js';
@@ -14,8 +13,8 @@ import { COMPANY_INFO, PROJECTS, SERVICES, VALUE_PILLARS, SLIDES_DATA } from '..
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Rutas relativas a la raíz del proyecto: en el Worker import.meta.url no está definido.
+const PUBLIC_DIR = path.resolve(process.cwd(), 'public');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -35,7 +34,17 @@ app.use((_req, res, next) => {
 
 
 // Rate Limiting Middlewares
-const aiConsultantLimiter = rateLimit({
+// Cada limitador se crea en su primera solicitud: en Cloudflare Workers no se pueden
+// iniciar temporizadores (los usa el almacén en memoria) fuera de un handler.
+const lazyRateLimit = (options: Parameters<typeof rateLimit>[0]): express.RequestHandler => {
+  let limiter: express.RequestHandler | undefined;
+  return (req, res, next) => {
+    limiter ??= rateLimit(options);
+    return limiter(req, res, next);
+  };
+};
+
+const aiConsultantLimiter = lazyRateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
   max: 25, // limit each IP to 25 requests per windowMs
   standardHeaders: true,
@@ -45,7 +54,7 @@ const aiConsultantLimiter = rateLimit({
   },
 });
 
-const estimateLimiter = rateLimit({
+const estimateLimiter = lazyRateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10, // limit each IP to 10 estimate requests
   standardHeaders: true,
@@ -55,7 +64,7 @@ const estimateLimiter = rateLimit({
   },
 });
 
-const uploadLimiter = rateLimit({
+const uploadLimiter = lazyRateLimit({
   windowMs: 15 * 60 * 1000,
   max: 40,
   standardHeaders: true,
@@ -97,7 +106,7 @@ app.post('/api/save-slide-image', uploadLimiter, requireAdmin, async (req, res) 
       return res.status(400).json({ error: 'El archivo excede el tamaño máximo permitido (10MB)' });
     }
 
-    const targetDir = path.resolve(__dirname, '..', '..', 'public', 'obras');
+    const targetDir = path.resolve(PUBLIC_DIR, 'obras');
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
     }
@@ -123,7 +132,7 @@ app.post('/api/save-slide-image', uploadLimiter, requireAdmin, async (req, res) 
 app.get('/api/slides-status', async (req, res) => {
   try {
     const fs = await import('fs');
-    const targetDir = path.resolve(__dirname, '..', '..', 'public', 'obras');
+    const targetDir = path.resolve(PUBLIC_DIR, 'obras');
     const existingSlides: number[] = [];
     if (fs.existsSync(targetDir)) {
       for (let i = 1; i <= 40; i++) {
