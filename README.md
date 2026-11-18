@@ -84,7 +84,9 @@ cloudflare.config.ts       Configuración del Worker
 src/
   App.tsx                  Composición de la página
   components/              Secciones, fichas de obra y widgets
-  data/portfolioData.ts    Contenido: empresa, servicios y obras
+  data/portfolioData.ts    Contenido: empresa, servicios y obras (fuente única)
+  data/schema.ts           Validación Zod del contenido
+  data/seo.ts              JSON-LD, sitemap.xml y llms.txt generados del contenido
   server/db/               Conexión y esquema de base de datos
   shared/apiContracts.ts   Validaciones Zod compartidas
   config.ts                Configuración pública (WhatsApp)
@@ -105,6 +107,14 @@ Para agregar medios de una obra, sigue la guía en [docs/MEDIOS.md](docs/MEDIOS.
 3. Revisa la ficha de la obra con `npm run dev`.
 
 Los originales y los videos comprimidos no se suben a git. Los videos deben alojarse en un servicio externo antes de publicarse.
+
+## Contenido y SEO
+
+`src/data/portfolioData.ts` es la única fuente de las obras y los servicios. En cada `npm run build`:
+
+- Se valida con los esquemas de `src/data/schema.ts`. El build falla si una obra no cumple (por ejemplo, un estatus fuera de la lista o un `id` repetido) o si una imagen referenciada no existe en `public/`. Un video ausente solo genera un aviso, porque los videos se alojan fuera de git.
+- Se generan desde `src/data/seo.ts`, y no se editan a mano: el canonical, `og:url` y las imágenes para redes de `index.html`, el JSON-LD, `robots.txt`, `sitemap.xml` y `llms.txt`. El dominio está en `SITE_URL`.
+- `public/_headers` marca con `X-Robots-Tag: noindex` las URL de `workers.dev`, para que solo se indexe `www.garam.com.co`.
 
 ## Clave de administración
 
