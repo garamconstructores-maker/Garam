@@ -16,7 +16,8 @@ export const COMPANY_INFO = {
     { label: 'Ciudades de Obra', value: '2' },
   ],
   contactInfo: {
-    email: 'contacto@garamconstructores.com',
+    // Buzón con Cloudflare Email Routing; garamconstructores.com no tiene correo.
+    email: 'contacto@garam.com.co',
     phone: '+58 (212) 999-8800',
     address: 'Av. Francisco de Miranda, Torre Europa, El Rosal, Caracas - Venezuela',
   },
