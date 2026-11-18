@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MessageCircle, PhoneCall, Compass, X, ChevronRight, ShieldCheck, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { buildWhatsAppUrl } from '../config';
@@ -13,6 +13,19 @@ export const VipConciergeWidget: React.FC<VipConciergeWidgetProps> = ({
   onOpenAiConsultant,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [tucked, setTucked] = useState(false);
+
+  // En móvil el botón tapa la esquina de las tarjetas: se esconde al bajar y vuelve al subir.
+  useEffect(() => {
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setTucked(window.innerWidth < 640 && y > lastY && y > 240);
+      lastY = y;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // Pre-configured WhatsApp message for high-net-worth clients
   const defaultWhatsAppText = encodeURIComponent(
@@ -21,7 +34,12 @@ export const VipConciergeWidget: React.FC<VipConciergeWidgetProps> = ({
   const whatsAppUrl = buildWhatsAppUrl(defaultWhatsAppText);
 
   return (
-    <aside aria-label="Canal de Atención Directa" className="fixed bottom-4 right-4 z-40 select-none sm:bottom-6 sm:right-6">
+    <aside
+      aria-label="Canal de Atención Directa"
+      className={`fixed bottom-4 right-4 z-40 select-none transition-transform duration-300 motion-reduce:transition-none sm:bottom-6 sm:right-6 ${
+        tucked && !isOpen ? 'translate-y-24' : ''
+      }`}
+    >
       <AnimatePresence>
         {isOpen && (
           <motion.div

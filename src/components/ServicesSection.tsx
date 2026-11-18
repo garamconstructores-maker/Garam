@@ -57,9 +57,11 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-brand-stone/70 text-[11px] text-brand-muted line-clamp-1">
-                  {service.scopeItems.slice(0, 3).join(' · ')}
-                </div>
+                <ul className="pt-3 border-t border-brand-stone/70 text-[11px] leading-snug text-brand-muted space-y-1">
+                  {service.scopeItems.slice(0, 3).map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
               </button>
             </StaggerItem>
           ))}
