@@ -71,17 +71,32 @@ const uploadLimiter = lazyRateLimit({
   legacyHeaders: false,
 });
 
+// Intentos con clave de administración por IP; limita la búsqueda de la clave por fuerza bruta.
+const adminLimiter = lazyRateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Compara resúmenes SHA-256 de igual largo con timingSafeEqual: el tiempo de respuesta
+// no revela cuántos caracteres de la clave enviada coinciden.
+const sha256 = (value: string) => crypto.createHash('sha256').update(value).digest();
 const adminKey = process.env.ADMIN_API_KEY;
+const adminKeyDigest = adminKey ? sha256(adminKey) : null;
+const isAdminKey = (candidate: string | undefined) =>
+  Boolean(adminKeyDigest && candidate && crypto.timingSafeEqual(sha256(candidate), adminKeyDigest));
+
 const requireAdmin = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (!adminKey) return res.status(503).json({ error: 'La administración no está configurada' });
-  if (req.header('x-admin-key') !== adminKey) return res.status(401).json({ error: 'No autorizado' });
+  if (!adminKeyDigest) return res.status(503).json({ error: 'La administración no está configurada' });
+  if (!isAdminKey(req.header('x-admin-key'))) return res.status(401).json({ error: 'No autorizado' });
   next();
 };
 
 const getClientIp = (req: express.Request) => req.ip?.replace(/^::ffff:/, '') ?? null;
 
 // 1. Hardened Save Slide Image Endpoint (Defends against Path Traversal & Arbitrary File Overwrites)
-app.post('/api/save-slide-image', uploadLimiter, requireAdmin, async (req, res) => {
+app.post('/api/save-slide-image', uploadLimiter, adminLimiter, requireAdmin, async (req, res) => {
   try {
     const { slideNumber, dataUrl } = req.body;
     if (!slideNumber || !dataUrl) {
@@ -168,7 +183,7 @@ app.get('/api/health', async (_req, res) => {
 });
 
 // Commercial Leads Export Endpoint (CSV or JSON)
-app.get('/api/leads/export', requireAdmin, async (req, res) => {
+app.get('/api/leads/export', adminLimiter, requireAdmin, async (req, res) => {
   try {
     const format = req.query.format === 'csv' ? 'csv' : 'json';
     const rows = await db.select().from(leads).orderBy(desc(leads.createdAt));

@@ -117,6 +117,12 @@ Los originales y los videos comprimidos no se suben a git. Los videos deben aloj
 - Cada obra tiene su página, `/proyectos/<id>/`, generada en el build con la ficha abierta, su título, descripción, canonical, imagen para redes y JSON-LD (`WebPage` y migas de pan). Al abrir una ficha en el sitio, la URL cambia a la de la obra y Atrás la cierra. Las rutas están en `src/data/routes.ts`.
 - `public/_headers` marca con `X-Robots-Tag: noindex` las URL de `workers.dev`, para que solo se indexe `www.garam.com.co`.
 
+## Clave de administración
+
+- `/api/leads/export` y `/api/save-slide-image` exigen la cabecera `x-admin-key`. La clave se compara en tiempo constante y cada IP tiene 20 intentos cada 15 minutos.
+- Usa una clave aleatoria larga, por ejemplo `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
+- **Rotación:** cámbiala cada 6 meses o de inmediato si alguien que la conocía deja el equipo. Carga la nueva con `npx cf workers secrets update ADMIN_API_KEY --worker garam-web --type secret_text --text "<nueva clave>"` (el valor queda en el historial de la terminal: bórralo después) y entrégala solo a quien exporta prospectos. La anterior deja de funcionar en cuanto termina el cambio.
+
 ## Dependencias
 
 - `package.json` fija versiones exactas (sin `^` ni `~`); `.npmrc` mantiene esa regla al instalar paquetes nuevos.
