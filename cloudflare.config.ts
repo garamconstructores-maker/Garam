@@ -6,6 +6,8 @@ export default defineConfig({
     compatibilityDate: "2026-09-21",
     compatibilityFlags: ["nodejs_compat"],
     entrypoint: "./src/worker.ts",
+    // Dominio de producción; garam.com.co redirige a www con una regla de redirección de la zona.
+    domains: ["www.garam.com.co", "garam.com.co"],
     observability: {
       enabled: true,
     },
