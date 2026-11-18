@@ -1,132 +1,110 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { PROJECTS } from '../data/portfolioData';
 import { Project } from '../types/portfolio';
-import { handleImageError } from '../utils/imageFallback';
-import {
-  Search,
-  ArrowUpRight,
-  X,
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { FadeIn } from './MotionReveal';
 import { CoverCarousel } from './CoverCarousel';
 import { projectPath } from '../data/routes';
 
-// Portafolio curado: obras que se muestran primero en el catálogo.
+// Portafolio curado: obras que se muestran primero.
 const FEATURED_IDS = ['casa-33', 'casa-am', 'fendi', 'casa-blanca-galipan'];
 
-// Agrupa el catálogo por estatus: primero lo entregado, luego lo que está en curso.
-const STATUS_GROUPS: { status: Project['status']; label: string }[] = [
-  { status: 'Ejecutado', label: 'Construidas' },
-  { status: 'En ejecución', label: 'En ejecución' },
-  { status: 'Por ejecutar', label: 'Por ejecutar' },
+// Pestañas por estatus; "Todas" muestra primero las destacadas.
+const STATUS_TABS: { id: string; label: string; status?: Project['status'] }[] = [
+  { id: 'todas', label: 'Todas' },
+  { id: 'construidas', label: 'Construidas', status: 'Ejecutado' },
+  { id: 'en-ejecucion', label: 'En ejecución', status: 'En ejecución' },
+  { id: 'por-ejecutar', label: 'Por ejecutar', status: 'Por ejecutar' },
 ];
+
+// Distancia mínima de deslizamiento (px) para pasar de obra en pantallas táctiles.
+const SWIPE_THRESHOLD = 60;
+
+const rank = (id: string) => {
+  const index = FEATURED_IDS.indexOf(id);
+  return index === -1 ? FEATURED_IDS.length : index;
+};
+
+const pad = (n: number) => String(n).padStart(2, '0');
 
 interface ProjectsCatalogProps {
   onSelectProject: (project: Project) => void;
 }
 
-export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
-  onSelectProject,
-}) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({ onSelectProject }) => {
+  const [tabId, setTabId] = useState('todas');
+  const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const reduceMotion = useReducedMotion();
+  const dragged = useRef(false);
 
-  const categories: string[] = [
-    'Todos',
-    'Residencial',
-    'Comercial',
-    'Corporativo',
-    'Salud / Especializada',
-    'Urbanismo',
-  ];
+  const sorted = useMemo(() => [...PROJECTS].sort((a, b) => rank(a.id) - rank(b.id)), []);
+  const counts = useMemo(
+    () => Object.fromEntries(STATUS_TABS.map((t) => [t.id, t.status ? sorted.filter((p) => p.status === t.status).length : sorted.length])),
+    [sorted],
+  );
+  const tab = STATUS_TABS.find((t) => t.id === tabId) ?? STATUS_TABS[0];
+  const projects = tab.status ? sorted.filter((p) => p.status === tab.status) : sorted;
+  const current = projects[Math.min(index, projects.length - 1)];
+  const total = projects.length;
 
-  const filteredProjects = useMemo(() => {
-    const filtered = PROJECTS.filter((p) => {
-      const matchesCategory =
-        selectedCategory === 'Todos' || p.category === selectedCategory;
-      const matchesSearch =
-        searchQuery.trim() === '' ||
-        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.slogan.toLowerCase().includes(searchQuery.toLowerCase());
+  const goTo = (next: number) => {
+    if (total === 0) return;
+    setDirection(next > index || (index === total - 1 && next === 0) ? 1 : -1);
+    setIndex((next + total) % total);
+  };
+  const changeTab = (id: string) => {
+    setTabId(id);
+    setIndex(0);
+  };
 
-      return matchesCategory && matchesSearch;
-    });
+  const onKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      goTo(index + 1);
+    } else if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      goTo(index - 1);
+    }
+  };
 
-    // Obras destacadas primero, en el orden definido; el resto conserva su orden.
-    const rank = (id: string) => {
-      const index = FEATURED_IDS.indexOf(id);
-      return index === -1 ? FEATURED_IDS.length : index;
-    };
-    return [...filtered].sort((a, b) => rank(a.id) - rank(b.id));
-  }, [selectedCategory, searchQuery]);
+  const slideOffset = reduceMotion ? 0 : 48;
 
   return (
     <section id="obras" className="py-16 sm:py-24 bg-brand-paper border-b border-brand-stone font-sans">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-        
-        {/* Section Header + Single-Row Filter Bar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <FadeIn direction="up" distance={24}>
-          <div className="space-y-6 border-b border-brand-stone pb-6">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-              <div className="space-y-2 max-w-2xl">
-                <div className="text-xs font-semibold text-brand-muted tracking-widest uppercase">
-                  PORTAFOLIO DE OBRAS
-                </div>
-                <h2 className="font-editorial text-4xl font-normal leading-tight tracking-tight text-brand-ink text-balance sm:text-5xl">
-                  Obras construidas y en ejecución.
-                </h2>
-              </div>
-
-              {/* Compact Search Input */}
-              <div className="relative w-full md:w-72">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-brand-muted/80" />
-                <input
-                  type="search"
-                  aria-label="Buscar obras por nombre o ubicación"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Buscar obra o ubicación..."
-                  className="w-full pl-9 pr-8 py-2 bg-white rounded-md border border-brand-stone text-xs text-brand-ink placeholder:text-brand-muted/80 focus:outline-none focus:border-brand-ink transition-all"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-brand-muted hover:text-brand-ink p-0.5 cursor-pointer"
-                    aria-label="Limpiar búsqueda"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
+          <div className="flex flex-col gap-6 border-b border-brand-stone pb-6 md:flex-row md:items-end md:justify-between">
+            <div className="space-y-2 max-w-2xl">
+              <div className="text-xs font-semibold text-brand-muted tracking-widest uppercase">Portafolio de obras</div>
+              <h2 className="font-editorial text-4xl font-normal leading-tight tracking-tight text-brand-ink text-balance sm:text-5xl">
+                Obras construidas y en ejecución.
+              </h2>
             </div>
 
-            {/* Single-Row Category Tabs */}
-            <div
-              role="group"
-              aria-label="Filtrar por categoría"
-              className="flex flex-wrap items-center gap-1.5"
-            >
-              {categories.map((cat) => {
-                const isActive = selectedCategory === cat;
+            <div role="group" aria-label="Filtrar obras por estatus" className="flex flex-wrap items-center gap-1.5">
+              {STATUS_TABS.map((t) => {
+                const active = t.id === tabId;
                 return (
                   <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    aria-pressed={isActive}
-                    className={`relative px-3.5 py-1.5 rounded-md text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer z-10 ${
-                      isActive ? 'text-white' : 'text-brand-muted hover:text-brand-ink'
+                    key={t.id}
+                    type="button"
+                    onClick={() => changeTab(t.id)}
+                    aria-pressed={active}
+                    className={`relative z-10 flex items-center gap-1.5 whitespace-nowrap rounded-md px-3.5 py-1.5 text-xs font-semibold transition-colors cursor-pointer ${
+                      active ? 'text-white' : 'text-brand-muted hover:text-brand-ink'
                     }`}
                   >
-                    {isActive && (
+                    {active && (
                       <motion.div
-                        layoutId="activeCategoryIndicator"
-                        className="absolute inset-0 bg-brand-ink rounded-md -z-10"
+                        layoutId="activeStatusIndicator"
+                        className="absolute inset-0 -z-10 rounded-md bg-brand-ink"
                         transition={{ type: 'spring', stiffness: 450, damping: 35 }}
                       />
                     )}
-                    <span>{cat}</span>
+                    <span>{t.label}</span>
+                    <span className={`font-mono tabular-nums ${active ? 'text-white/70' : 'text-brand-muted/70'}`}>{counts[t.id]}</span>
                   </button>
                 );
               })}
@@ -134,194 +112,144 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
           </div>
         </FadeIn>
 
-        {/* Editorial Projects Grid with Per-Card Intersection Observer Animations */}
-        <AnimatePresence mode="wait">
-          {filteredProjects.length === 0 ? (
-            <motion.div
-              key="empty"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="p-12 text-center bg-white rounded-xl border border-brand-stone space-y-4"
-            >
-              <p className="text-sm text-brand-muted">
-                No se encontraron obras con ese criterio.
-              </p>
-              <button
-                onClick={() => {
-                  setSelectedCategory('Todos');
-                  setSearchQuery('');
-                }}
-                className="px-4 py-2 rounded-md bg-brand-ink text-white text-xs font-semibold cursor-pointer whitespace-nowrap"
-              >
-                Ver todas las obras
-              </button>
-            </motion.div>
-          ) : (
-            <motion.div
-              key={`${selectedCategory}-${searchQuery}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="space-y-8"
-            >
-              {/* Featured Project with Viewport Scroll Reveal */}
-              {filteredProjects.length > 0 && (() => {
-                const flagship = filteredProjects[0];
+        {current && (
+          <div
+            role="region"
+            aria-roledescription="carrusel"
+            aria-label="Obras de GARAM"
+            onKeyDown={onKeyDown}
+            className="space-y-5"
+          >
+            <div className="relative overflow-hidden rounded-xl border border-brand-stone bg-white">
+              <AnimatePresence mode="wait" initial={false} custom={direction}>
+                <motion.div
+                  key={`${tabId}-${current.id}`}
+                  role="group"
+                  aria-roledescription="diapositiva"
+                  aria-label={`${index + 1} de ${total}: ${current.title}`}
+                  custom={direction}
+                  initial={{ opacity: 0, x: direction * slideOffset }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -direction * slideOffset }}
+                  transition={{ duration: reduceMotion ? 0.15 : 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.15}
+                  onDragStart={() => {
+                    dragged.current = true;
+                  }}
+                  onDragEnd={(_, info) => {
+                    if (info.offset.x < -SWIPE_THRESHOLD) goTo(index + 1);
+                    else if (info.offset.x > SWIPE_THRESHOLD) goTo(index - 1);
+                    // El clic que sigue al arrastre no debe abrir la ficha.
+                    window.setTimeout(() => (dragged.current = false), 0);
+                  }}
+                  onClick={() => {
+                    if (!dragged.current) onSelectProject(current);
+                  }}
+                  className="group grid cursor-pointer grid-cols-1 items-stretch lg:grid-cols-12"
+                >
+                  <div className="relative aspect-[16/10] overflow-hidden bg-slate-900 lg:col-span-7 lg:aspect-auto lg:min-h-[460px]">
+                    <CoverCarousel
+                      project={current}
+                      className="absolute inset-0 h-full w-full"
+                      loading="eager"
+                      sizes="(min-width: 1024px) 58vw, 100vw"
+                    />
+                    <span className="pointer-events-none absolute left-3 top-3 z-10 rounded-md bg-white/90 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-brand-ink shadow-sm">
+                      {current.status}
+                    </span>
+                  </div>
 
-                return (
-                  <FadeIn direction="up" distance={32} duration={0.75} amount={0.12}>
-                    <motion.div
-                      whileHover={{ y: -2 }}
-                      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                      onClick={() => onSelectProject(flagship)}
-                      className="group bg-white rounded-xl border border-brand-stone overflow-hidden hover:border-brand-ink/30 transition-all cursor-pointer"
-                    >
-                      <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
-                        
-                        {/* Left: Uninterrupted Main Photograph */}
-                        <div className="lg:col-span-7 relative aspect-[16/10] lg:aspect-auto lg:min-h-[400px] bg-slate-900 overflow-hidden">
-                          <CoverCarousel
-                            project={flagship}
-                            className="absolute inset-0 w-full h-full"
-                            loading="eager"
-                            sizes="(min-width: 1024px) 58vw, 100vw"
-                          />
-
-                        </div>
-
-                        {/* Right: Concise Editorial Overview */}
-                        <div className="lg:col-span-5 p-7 sm:p-10 flex flex-col justify-between space-y-6">
-                          <div className="space-y-3">
-                            <div className="flex flex-wrap items-center gap-2 text-xs text-brand-muted">
-                              <span className="font-medium text-brand-ink">{flagship.category}</span>
-                              <span aria-hidden="true">·</span>
-                              <span>{flagship.location}</span>
-                            </div>
-
-                            <h3 className="font-editorial text-3xl sm:text-5xl font-normal tracking-tight text-brand-ink group-hover:text-brand-copper transition-colors">
-                              {flagship.title}
-                            </h3>
-
-                            <p className="text-sm text-brand-muted leading-relaxed line-clamp-3">
-                              {flagship.slogan}
-                            </p>
-                          </div>
-
-                          <div className="pt-4 border-t border-brand-stone flex items-center justify-between text-xs">
-                            <div className="font-mono tabular-nums text-brand-ink font-semibold">
-                              {flagship.area}
-                            </div>
-                            {/* Enlace real a la página de la obra: los buscadores lo siguen y con teclado abre la ficha. */}
-                            <a
-                              href={projectPath(flagship.id)}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                onSelectProject(flagship);
-                              }}
-                              aria-label={`Ver Ficha Técnica de ${flagship.title}`}
-                              className="font-semibold text-brand-ink group-hover:text-brand-copper transition-colors flex items-center gap-1 rounded-sm cursor-pointer"
-                            >
-                              <span>Ver Ficha Técnica</span>
-                              <ArrowUpRight aria-hidden="true" className="w-3.5 h-3.5" />
-                            </a>
-                          </div>
-                        </div>
-
+                  <div className="flex flex-col justify-between gap-6 p-7 sm:p-10 lg:col-span-5">
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-brand-muted">
+                        <span className="font-medium text-brand-ink">{current.category}</span>
+                        <span aria-hidden="true">·</span>
+                        <span>{current.location}</span>
                       </div>
-                    </motion.div>
-                  </FadeIn>
-                );
-              })()}
+                      <h3 className="font-editorial text-3xl font-normal tracking-tight text-brand-ink transition-colors group-hover:text-brand-copper sm:text-5xl">
+                        {current.title}
+                      </h3>
+                      <p className="text-sm leading-relaxed text-brand-muted">{current.slogan}</p>
+                      <p className="line-clamp-3 text-sm leading-relaxed text-brand-muted/90">{current.memoria}</p>
+                    </div>
 
-              {/* Secondary Projects Grid with Individual Intersection Observer Stagger */}
-              {filteredProjects.length > 1 && STATUS_GROUPS.map((group) => {
-                const items = filteredProjects.slice(1).filter((p) => p.status === group.status);
-                if (items.length === 0) return null;
-                return (
-                <div key={group.status} className="space-y-6">
-                <div className="flex items-baseline gap-3 border-b border-brand-stone pb-3">
-                  <h3 className="font-editorial text-2xl font-normal text-brand-ink">{group.label}</h3>
-                  <span className="font-mono text-xs tabular-nums text-brand-muted">{items.length}</span>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                  {items.map((project, idx) => (
-                    <FadeIn
-                      key={project.id}
-                      direction="up"
-                      distance={28}
-                      duration={0.65}
-                      delay={(idx % 3) * 0.08}
-                      amount={0.12}
-                      className="h-full"
-                    >
-                      <motion.div
-                        whileHover={{ y: -3 }}
-                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                        className="group bg-white rounded-xl border border-brand-stone hover:border-brand-ink/30 overflow-hidden flex flex-col justify-between h-full cursor-pointer transition-all"
-                        onClick={() => onSelectProject(project)}
+                    <div className="flex items-center justify-between gap-4 border-t border-brand-stone pt-4 text-xs">
+                      <div className="font-mono font-semibold tabular-nums text-brand-ink">{current.area}</div>
+                      {/* Enlace real a la página de la obra: los buscadores lo siguen y con teclado abre la ficha. */}
+                      <a
+                        href={projectPath(current.id)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          onSelectProject(current);
+                        }}
+                        aria-label={`Ver ficha técnica de ${current.title}`}
+                        className="flex cursor-pointer items-center gap-1 rounded-sm font-semibold text-brand-ink transition-colors group-hover:text-brand-copper"
                       >
-                        <div>
-                          {/* Clean Photography */}
-                          <div className="relative aspect-[16/10] overflow-hidden bg-slate-900">
-                            <CoverCarousel project={project} className="absolute inset-0 w-full h-full" />
+                        <span>Ver ficha técnica</span>
+                        <ArrowUpRight aria-hidden="true" className="h-3.5 w-3.5" />
+                      </a>
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
 
-                            <span className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-md bg-white/90 text-brand-ink text-[11px] font-semibold tracking-wide shadow-sm pointer-events-none">
-                              {project.status}
-                            </span>
+            <div className="flex items-center justify-between gap-4">
+              <button
+                type="button"
+                onClick={() => goTo(index - 1)}
+                aria-label="Obra anterior"
+                disabled={total < 2}
+                className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-brand-stone bg-white text-brand-ink transition-colors hover:border-brand-ink disabled:cursor-default disabled:opacity-40"
+              >
+                <ArrowLeft aria-hidden="true" className="h-4 w-4" />
+              </button>
 
-                          </div>
-
-                          {/* Minimalist Editorial Card Copy */}
-                          <div className="p-6 space-y-2.5">
-                            <div className="flex flex-wrap items-center gap-1.5 text-xs text-brand-muted">
-                              <span className="font-medium text-brand-ink">{project.category}</span>
-                              <span aria-hidden="true">·</span>
-                              <span>{project.location}</span>
-                            </div>
-
-                            <h3 className="font-editorial text-2xl sm:text-3xl font-normal leading-tight tracking-tight min-h-[2lh] text-brand-ink group-hover:text-brand-copper transition-colors">
-                              {project.title}
-                            </h3>
-
-                            <p className="text-xs sm:text-sm text-brand-muted line-clamp-2 leading-relaxed">
-                              {project.slogan}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="px-6 pb-5 pt-3 border-t border-brand-stone/70 flex items-center justify-between text-xs">
-                          <span className="font-mono tabular-nums text-brand-muted">
-                            {project.area}
-                          </span>
-                          {/* Enlace real a la página de la obra: los buscadores lo siguen y con teclado abre la ficha. */}
-                          <a
-                            href={projectPath(project.id)}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              onSelectProject(project);
-                            }}
-                            aria-label={`Ver ficha técnica de ${project.title}`}
-                            className="font-semibold text-brand-ink group-hover:text-brand-copper transition-colors flex items-center gap-1 rounded-sm cursor-pointer"
-                          >
-                            <span>Ver ficha técnica</span>
-                            <ArrowUpRight aria-hidden="true" className="w-3.5 h-3.5" />
-                          </a>
-                        </div>
-                      </motion.div>
-                    </FadeIn>
+              {/* Índice: un enlace por obra (rastreable y con nombre); en pantalla se ve como puntos. */}
+              <nav aria-label="Ir a una obra" className="flex min-w-0 flex-1 flex-col items-center gap-2">
+                <ol className="flex flex-wrap items-center justify-center gap-1.5">
+                  {projects.map((p, i) => (
+                    <li key={p.id}>
+                      <a
+                        href={projectPath(p.id)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          goTo(i);
+                        }}
+                        aria-label={p.title}
+                        aria-current={i === index ? 'true' : undefined}
+                        title={p.title}
+                        className="flex h-6 items-center"
+                      >
+                        <span
+                          className={`block h-1.5 rounded-full transition-all duration-300 ${
+                            i === index ? 'w-6 bg-brand-ink' : 'w-1.5 bg-brand-stone hover:bg-brand-muted'
+                          }`}
+                        />
+                      </a>
+                    </li>
                   ))}
-                </div>
-                </div>
-                );
-              })}
-            </motion.div>
-          )}
-        </AnimatePresence>
+                </ol>
+                <p aria-live="polite" className="font-mono text-xs tabular-nums text-brand-muted">
+                  {pad(index + 1)} / {pad(total)}
+                </p>
+              </nav>
 
+              <button
+                type="button"
+                onClick={() => goTo(index + 1)}
+                aria-label="Obra siguiente"
+                disabled={total < 2}
+                className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-brand-stone bg-white text-brand-ink transition-colors hover:border-brand-ink disabled:cursor-default disabled:opacity-40"
+              >
+                <ArrowRight aria-hidden="true" className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
