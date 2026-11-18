@@ -77,6 +77,8 @@ class FallbackDb {
   insert(_table: any) {
     return {
       values: async (data: any) => {
+        // En Vercel el disco es de solo lectura: sin DATABASE_URL el prospecto se perdería.
+        if (process.env.VERCEL) throw new Error('DATABASE_URL no está configurada en producción');
         const current = loadLocalLeads();
         const record = {
           id: data.id || (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)),
