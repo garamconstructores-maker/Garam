@@ -96,7 +96,7 @@ tests/api.test.ts          Pruebas de la API
 
 ## Fotos y videos de las obras
 
-Las fotos se publican en WebP: 1920 px de ancho para la web y 3840 px para el visor ampliado (archivos `*-8k.webp`).
+Las fotos se publican en WebP: 1920 px de ancho para la web y 3840 px para el visor ampliado (archivos `*-8k.webp`). Cada foto web tiene además variantes de 640 y 1280 px (`*-640.webp`, `*-1280.webp`) que las tarjetas y miniaturas cargan con `srcset`. Al agregar fotos, genéralas con `node scripts/imagenes-responsivas.mjs` (requiere ffmpeg). `npm test` falla si falta una variante o si un archivo supera su tope: 200 KB (640), 400 KB (1280), 1 MB (1920) y 3 MB (8K).
 
 Para agregar medios de una obra, sigue la guía en [docs/MEDIOS.md](docs/MEDIOS.md). En resumen:
 

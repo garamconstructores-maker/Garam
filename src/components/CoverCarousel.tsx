@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Project } from '../types/portfolio';
 import { handleImageError } from '../utils/imageFallback';
+import { responsiveSrcSet, variantUrl } from '../utils/responsiveImage';
 
 const CYCLE_MS = 1400;
 const MAX_COVER_IMAGES = 4;
@@ -15,9 +16,16 @@ interface CoverCarouselProps {
   project: Project;
   className?: string;
   loading?: 'eager' | 'lazy';
+  /** Ancho que ocupa la portada, para que el navegador elija la variante (atributo sizes). */
+  sizes?: string;
 }
 
-export const CoverCarousel: React.FC<CoverCarouselProps> = ({ project, className = '', loading = 'lazy' }) => {
+export const CoverCarousel: React.FC<CoverCarouselProps> = ({
+  project,
+  className = '',
+  loading = 'lazy',
+  sizes = '(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw',
+}) => {
   const images = getCoverImages(project);
   const [index, setIndex] = useState(0);
   const [hovered, setHovered] = useState(false);
@@ -53,7 +61,7 @@ export const CoverCarousel: React.FC<CoverCarouselProps> = ({ project, className
     >
       {/* Fondo: la misma foto borrosa llena los espacios que deja la foto completa. */}
       <img
-        src={images[index]}
+        src={variantUrl(images[index], 640)}
         alt=""
         aria-hidden="true"
         className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-60 transition-opacity duration-700"
@@ -64,7 +72,9 @@ export const CoverCarousel: React.FC<CoverCarouselProps> = ({ project, className
       {images.map((src, i) => (
         <img
           key={src}
-          src={src}
+          src={variantUrl(src, 1280)}
+          srcSet={responsiveSrcSet(src)}
+          sizes={sizes}
           alt={i === index ? project.title : ''}
           referrerPolicy="no-referrer"
           style={{ imageRendering: '-webkit-optimize-contrast' }}
