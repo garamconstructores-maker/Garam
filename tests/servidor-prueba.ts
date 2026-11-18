@@ -8,7 +8,8 @@ import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const D1_ID = 'b453f836-8bd6-4031-a2e1-57be9db6e27b';
-const STARTUP_TIMEOUT_MS = 120_000;
+// Margen amplio: en redes lentas la migración y el arranque de cf dev tardan minutos.
+const STARTUP_TIMEOUT_MS = 300_000;
 // Modo de Vite de las pruebas: cf dev lee las claves de .dev.vars.pruebas, que tiene
 // prioridad sobre el .dev.vars de desarrollo (ver startTestServer).
 const TEST_MODE = 'pruebas';

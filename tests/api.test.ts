@@ -12,7 +12,7 @@ before(async () => {
   if (BASE_URL) return;
   server = await startTestServer();
   BASE_URL = server.baseUrl;
-}, { timeout: 180_000 });
+}, { timeout: 480_000 });
 
 after(async () => {
   await server?.stop();
