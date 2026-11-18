@@ -106,6 +106,12 @@ Para agregar medios de una obra, sigue la guía en [docs/MEDIOS.md](docs/MEDIOS.
 
 Los originales y los videos comprimidos no se suben a git. Los videos deben alojarse en un servicio externo antes de publicarse.
 
+## Clave de administración
+
+- `/api/leads/export` y `/api/save-slide-image` exigen la cabecera `x-admin-key`. La clave se compara en tiempo constante y cada IP tiene 20 intentos cada 15 minutos.
+- Usa una clave aleatoria larga, por ejemplo `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
+- **Rotación:** cámbiala cada 6 meses o de inmediato si alguien que la conocía deja el equipo. Carga la nueva con `npx cf workers secrets update ADMIN_API_KEY --worker garam-web --type secret_text --text "<nueva clave>"` (el valor queda en el historial de la terminal: bórralo después) y entrégala solo a quien exporta prospectos. La anterior deja de funcionar en cuanto termina el cambio.
+
 ## Dependencias
 
 - `package.json` fija versiones exactas (sin `^` ni `~`); `.npmrc` mantiene esa regla al instalar paquetes nuevos.
