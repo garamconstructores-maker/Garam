@@ -1,8 +1,22 @@
-import { test, describe } from 'node:test';
+import { after, before, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
+import { startTestServer, TEST_ADMIN_KEY, type TestServer } from './servidor-prueba.ts';
 
-// Por defecto, el servidor de `npm run dev` (cf dev).
-const BASE_URL = process.env.BASE_URL ?? 'http://localhost:5173';
+// Sin BASE_URL, las pruebas levantan su propio cf dev con una base D1 temporal.
+// Con BASE_URL (por ejemplo, la URL publicada) se prueban contra ese servidor.
+let BASE_URL = process.env.BASE_URL ?? '';
+const ADMIN_KEY = process.env.BASE_URL ? (process.env.ADMIN_API_KEY ?? '') : TEST_ADMIN_KEY;
+let server: TestServer | undefined;
+
+before(async () => {
+  if (BASE_URL) return;
+  server = await startTestServer();
+  BASE_URL = server.baseUrl;
+}, { timeout: 180_000 });
+
+after(async () => {
+  await server?.stop();
+});
 
 describe('GARAM Constructores - API & Security Hardening Tests', () => {
 
@@ -96,7 +110,7 @@ describe('GARAM Constructores - API & Security Hardening Tests', () => {
   test('POST /api/save-slide-image must block path traversal attempts', async () => {
     const res = await fetch(`${BASE_URL}/api/save-slide-image`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-key': process.env.ADMIN_API_KEY || '' },
+      headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_KEY },
       body: JSON.stringify({
         slideNumber: '../../etc/passwd',
         dataUrl: 'data:image/jpeg;base64,/9j/4AAQSkZJRg==',
@@ -108,6 +122,17 @@ describe('GARAM Constructores - API & Security Hardening Tests', () => {
       const data = await res.json();
       assert.ok(data.error.includes('entero válido'));
     }
+  });
+
+  test('GET /api/leads/export returns the registered leads with the admin key', { skip: !ADMIN_KEY }, async () => {
+    const jsonRes = await fetch(`${BASE_URL}/api/leads/export?format=json`, { headers: { 'x-admin-key': ADMIN_KEY } });
+    assert.equal(jsonRes.status, 200);
+    const data = await jsonRes.json();
+    assert.ok(data.leads.some((lead: any) => lead.name === 'Arq. Valentina Mendoza'));
+
+    const csvRes = await fetch(`${BASE_URL}/api/leads/export?format=csv`, { headers: { 'x-admin-key': ADMIN_KEY } });
+    assert.equal(csvRes.status, 200);
+    assert.ok((await csvRes.text()).startsWith('referenceId,createdAt,name'));
   });
 
   test('GET /api/leads/export must remain protected for both formats', async () => {
