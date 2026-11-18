@@ -1,7 +1,8 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
-const BASE_URL = 'http://localhost:3000';
+// Por defecto, el servidor de `npm run dev` (cf dev).
+const BASE_URL = process.env.BASE_URL ?? 'http://localhost:5173';
 
 describe('GARAM Constructores - API & Security Hardening Tests', () => {
 

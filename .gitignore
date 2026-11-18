@@ -13,3 +13,11 @@ fotos-fuente/
 
 # Originales que se procesan con scripts/procesar-medios.mjs (no van a git)
 medios-entrada/
+
+# Build y estado local de Cloudflare
+.cloudflare/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
