@@ -4,13 +4,16 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
 
+import { cloudflare } from "@cloudflare/vite-plugin";
+
 const rootDir = typeof import.meta.dirname !== 'undefined' 
   ? import.meta.dirname 
   : path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss()],
+    // El build SSR del prerenderizado (scripts/prerender.mjs) no usa el plugin de Cloudflare.
+    plugins: [react(), tailwindcss(), ...(process.env.GARAM_PRERENDER ? [] : [cloudflare()])],
     resolve: {
       alias: {
         '@': path.resolve(rootDir, '.'),
@@ -46,4 +49,3 @@ export default defineConfig(() => {
     },
   };
 });
-

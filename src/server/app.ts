@@ -1,25 +1,22 @@
 import express from 'express';
 import crypto from 'node:crypto';
-import { createServer } from 'node:http';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
 import { count, desc } from 'drizzle-orm';
-import { db } from './src/server/db/index.js';
-import { leadExportColumns, leads } from './src/server/db/schema.js';
-import { chatSchema, leadSchema } from './src/shared/apiContracts.js';
-import { COMPANY_INFO, PROJECTS, SERVICES, VALUE_PILLARS, SLIDES_DATA } from './src/data/portfolioData.js';
+import { db } from './db/index.js';
+import { leadExportColumns, leads } from './db/schema.js';
+import { chatSchema, leadSchema } from '../shared/apiContracts.js';
+import { COMPANY_INFO, PROJECTS, SERVICES, VALUE_PILLARS, SLIDES_DATA } from '../data/portfolioData.js';
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Rutas relativas a la raíz del proyecto: en el Worker import.meta.url no está definido.
+const PUBLIC_DIR = path.resolve(process.cwd(), 'public');
 
 const app = express();
-const PORT = Number(process.env.PORT) || 3000;
 app.set('trust proxy', 1);
 
 // Security & DoS Mitigation: Keep JSON bodies small; uploads use a dedicated limit.
@@ -35,11 +32,19 @@ app.use((_req, res, next) => {
   next();
 });
 
-app.use(express.static(path.resolve(__dirname, 'public')));
-
 
 // Rate Limiting Middlewares
-const aiConsultantLimiter = rateLimit({
+// Cada limitador se crea en su primera solicitud: en Cloudflare Workers no se pueden
+// iniciar temporizadores (los usa el almacén en memoria) fuera de un handler.
+const lazyRateLimit = (options: Parameters<typeof rateLimit>[0]): express.RequestHandler => {
+  let limiter: express.RequestHandler | undefined;
+  return (req, res, next) => {
+    limiter ??= rateLimit(options);
+    return limiter(req, res, next);
+  };
+};
+
+const aiConsultantLimiter = lazyRateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
   max: 25, // limit each IP to 25 requests per windowMs
   standardHeaders: true,
@@ -49,7 +54,7 @@ const aiConsultantLimiter = rateLimit({
   },
 });
 
-const estimateLimiter = rateLimit({
+const estimateLimiter = lazyRateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10, // limit each IP to 10 estimate requests
   standardHeaders: true,
@@ -59,7 +64,7 @@ const estimateLimiter = rateLimit({
   },
 });
 
-const uploadLimiter = rateLimit({
+const uploadLimiter = lazyRateLimit({
   windowMs: 15 * 60 * 1000,
   max: 40,
   standardHeaders: true,
@@ -101,7 +106,7 @@ app.post('/api/save-slide-image', uploadLimiter, requireAdmin, async (req, res) 
       return res.status(400).json({ error: 'El archivo excede el tamaño máximo permitido (10MB)' });
     }
 
-    const targetDir = path.resolve(__dirname, 'public', 'obras');
+    const targetDir = path.resolve(PUBLIC_DIR, 'obras');
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
     }
@@ -127,7 +132,7 @@ app.post('/api/save-slide-image', uploadLimiter, requireAdmin, async (req, res) 
 app.get('/api/slides-status', async (req, res) => {
   try {
     const fs = await import('fs');
-    const targetDir = path.resolve(__dirname, 'public', 'obras');
+    const targetDir = path.resolve(PUBLIC_DIR, 'obras');
     const existingSlides: number[] = [];
     if (fs.existsSync(targetDir)) {
       for (let i = 1; i <= 40; i++) {
@@ -154,11 +159,11 @@ app.get('/api/health', async (_req, res) => {
       service: 'GARAM Constructores API',
       version: '2026.1.0',
       geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
-      databaseConfigured: Boolean(process.env.DATABASE_URL),
+      databaseConfigured: true,
       metrics: { memoryRssMb: Math.round(mem.rss / (1024 * 1024)), memoryHeapUsedMb: Math.round(mem.heapUsed / (1024 * 1024)), persistedLeadsCount: leadsCount },
     });
   } catch {
-    return res.status(503).json({ status: 'degraded', databaseConfigured: Boolean(process.env.DATABASE_URL) });
+    return res.status(503).json({ status: 'degraded', databaseConfigured: false });
   }
 });
 
@@ -310,45 +315,4 @@ app.post('/api/estimate', estimateLimiter, async (req, res) => {
   }
 });
 
-// Serve Vite dev middleware or static dist files
-async function setupServer() {
-  const httpServer = createServer(app);
-
-  if (process.env.NODE_ENV !== 'production') {
-    const { createServer: createViteServer } = await import('vite');
-    const vite = await createViteServer({
-      server: {
-        middlewareMode: true,
-        port: PORT,
-        ws: { server: httpServer },
-      },
-      appType: 'custom',
-    });
-
-    app.use(vite.middlewares);
-
-    app.use('*', async (req, res, next) => {
-      const url = req.originalUrl;
-      try {
-        const fs = await import('fs');
-        const rawTemplate = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8');
-        const template = await vite.transformIndexHtml(url, rawTemplate);
-        res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
-      } catch (e: any) {
-        vite.ssrFixStacktrace(e);
-        next(e);
-      }
-    });
-  } else {
-    app.use(express.static(path.resolve(__dirname, 'dist')));
-    app.get('*', (req, res) => {
-      res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
-    });
-  }
-
-  httpServer.listen(PORT, '0.0.0.0', () => {
-    console.log(`GARAM Constructores App listening on port ${PORT}`);
-  });
-}
-
-setupServer();
+export { app };

@@ -18,23 +18,23 @@ El sitio presenta las obras de la empresa, permite solicitar una cotización y r
 | Capa | Herramientas |
 |---|---|
 | Frontend | React 19, Vite 8, Tailwind CSS 4, Framer Motion, lucide-react |
-| Backend | Express (`server.ts`), express-rate-limit, Zod |
-| Datos | PostgreSQL con Drizzle ORM. Respaldo local en `data/leads.json`, solo para desarrollo |
+| Backend | Express (`src/server/app.ts`) en un Worker de Cloudflare, express-rate-limit, Zod |
+| Datos | Cloudflare D1 (SQLite) con Drizzle ORM; migraciones en `migrations/` |
 | IA | `@google/genai` (Gemini) |
 | Medios | ffmpeg y ffprobe, para procesar fotos y videos (`scripts/procesar-medios.mjs`) |
 
 ## Requisitos
 
 - Node.js 22 o superior
-- [Bun](https://bun.sh), porque el proyecto usa `bun.lock`. También funciona con npm.
 - ffmpeg, solo si vas a procesar fotos o videos nuevos
 
 ## Puesta en marcha
 
 ```bash
-bun install
-cp .env.example .env    # completa los valores
-bun run dev             # http://localhost:3000
+npm install
+cp .env.example .env              # variables públicas del build (VITE_*)
+cp .dev.vars.example .dev.vars    # claves del Worker para desarrollo local
+npm run dev             # http://localhost:5173
 ```
 
 ### Variables de entorno
@@ -42,23 +42,24 @@ bun run dev             # http://localhost:3000
 | Variable | Obligatoria | Uso |
 |---|---|---|
 | `GEMINI_API_KEY` | Para el asesor IA | Sin ella, el chat responde que está en mantenimiento. |
-| `DATABASE_URL` | En producción | Conexión a PostgreSQL. Si falta, los prospectos se guardan en `data/leads.json`. |
 | `ADMIN_API_KEY` | Para administración | Clave de la cabecera `x-admin-key`. Sin ella, los endpoints de administración responden 503. |
 | `VITE_WHATSAPP_NUMBER` | Antes de publicar | Número comercial de WhatsApp, solo dígitos y con código de país. |
 | `PORT` | No | Puerto del servidor. Por defecto, 3000. |
 
-> `data/leads.json` contiene datos personales de clientes y está excluido de git. No lo subas al repositorio.
+> La base D1 `garam-leads` guarda datos personales de clientes. En local, `cf dev` usa una copia simulada en `.cloudflare/state/`, excluida de git. Antes de la primera prueba local, ejecuta `npm run db:migrate:local`.
 
 ## Scripts
 
 | Comando | Qué hace |
 |---|---|
-| `bun run dev` | Servidor de desarrollo con Vite integrado |
-| `bun run build` | Verifica tipos y genera `dist/` |
-| `bun run start` | Sirve `dist/` en modo producción |
-| `bun run lint` | Verifica tipos con `tsc --noEmit` |
-| `bun run test` | Pruebas de la API. Requieren el servidor corriendo en el puerto 3000 |
-| `bun run clean` | Elimina `dist/` |
+| `npm run dev` | Servidor de desarrollo de Cloudflare (`cf dev`): Vite y el Worker de la API |
+| `npm run build` | Verifica tipos, genera el build para Cloudflare en `.cloudflare/output/` y prerenderiza el HTML |
+| `npm run deploy` | Ejecuta `npm run build` y despliega ese build (`cf deploy --prebuilt`) |
+| `npm run db:migrate:local` | Aplica las migraciones de `migrations/` a la base D1 local |
+| `npm run db:migrate` | Aplica las migraciones a la base D1 de producción |
+| `npm run lint` | Verifica tipos con `tsc --noEmit` |
+| `npm run test` | Pruebas de la API. Requieren `npm run dev` corriendo (o `BASE_URL`) |
+| `npm run clean` | Elimina `dist/` |
 
 > Las pruebas crean un prospecto de prueba en la base configurada. Ejecútalas contra una base de desarrollo.
 
@@ -77,7 +78,9 @@ bun run dev             # http://localhost:3000
 ## Estructura del proyecto
 
 ```
-server.ts                  Servidor Express y endpoints
+src/worker.ts              Entrada del Worker de Cloudflare
+src/server/app.ts          Aplicación Express y endpoints
+cloudflare.config.ts       Configuración del Worker
 src/
   App.tsx                  Composición de la página
   components/              Secciones, fichas de obra y widgets
@@ -99,16 +102,16 @@ Para agregar medios de una obra, sigue la guía en [docs/MEDIOS.md](docs/MEDIOS.
 
 1. Coloca los originales en `medios-entrada/<id-de-obra>/`, con nombres como `01-obra-cimentacion.jpg`.
 2. Ejecuta `node scripts/procesar-medios.mjs`.
-3. Revisa la ficha de la obra con `bun run dev`.
+3. Revisa la ficha de la obra con `npm run dev`.
 
 Los originales y los videos comprimidos no se suben a git. Los videos deben alojarse en un servicio externo antes de publicarse.
 
 ## Despliegue
 
-- Compila con `bun run build` y sirve con `bun run start`. Requiere las variables de entorno de producción.
+- El sitio y la API se despliegan como un Worker de Cloudflare con `npm run deploy`. Las claves de producción se cargan como secretos del Worker. Detalles en [docs/decisiones/0001-api-en-cloudflare-workers.md](docs/decisiones/0001-api-en-cloudflare-workers.md) y [docs/decisiones/0002-prospectos-en-d1.md](docs/decisiones/0002-prospectos-en-d1.md).
 - La imagen para redes sociales es `public/og-image.jpg` (1200 × 630 px).
 
 ## Flujo de trabajo
 
 - Trabaja en una rama por tarea y abre un pull request contra `main`.
-- Antes de mergear, verifica `bun run lint` y `bun run build`.
+- Antes de mergear, verifica `npm run lint` y `npm run build`.
