@@ -502,32 +502,32 @@ const BASE_PROJECTS: Project[] = [
       },
       {
         type: 'obra',
-        url: '/obras/fendi/fendi-01.webp',
+        url: '/obras/fendi/fendi-06.webp',
         caption: 'FENDI · Registro de obra 1 de 6',
       },
       {
         type: 'obra',
-        url: '/obras/fendi/fendi-02.webp',
+        url: '/obras/fendi/fendi-04.webp',
         caption: 'FENDI · Registro de obra 2 de 6',
       },
       {
         type: 'obra',
-        url: '/obras/fendi/fendi-03.webp',
+        url: '/obras/fendi/fendi-05.webp',
         caption: 'FENDI · Registro de obra 3 de 6',
       },
       {
         type: 'obra',
-        url: '/obras/fendi/fendi-04.webp',
+        url: '/obras/fendi/fendi-01.webp',
         caption: 'FENDI · Registro de obra 4 de 6',
       },
       {
         type: 'obra',
-        url: '/obras/fendi/fendi-05.webp',
+        url: '/obras/fendi/fendi-02.webp',
         caption: 'FENDI · Registro de obra 5 de 6',
       },
       {
         type: 'obra',
-        url: '/obras/fendi/fendi-06.webp',
+        url: '/obras/fendi/fendi-03.webp',
         caption: 'FENDI · Registro de obra 6 de 6',
       },
     ],
