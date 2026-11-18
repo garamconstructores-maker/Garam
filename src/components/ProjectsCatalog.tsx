@@ -182,7 +182,12 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                         
                         {/* Left: Uninterrupted Main Photograph */}
                         <div className="lg:col-span-7 relative aspect-[16/10] lg:aspect-auto lg:min-h-[400px] bg-slate-900 overflow-hidden">
-                          <CoverCarousel project={flagship} className="absolute inset-0 w-full h-full" loading="eager" />
+                          <CoverCarousel
+                            project={flagship}
+                            className="absolute inset-0 w-full h-full"
+                            loading="eager"
+                            sizes="(min-width: 1024px) 58vw, 100vw"
+                          />
 
                         </div>
 

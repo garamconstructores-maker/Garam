@@ -98,7 +98,7 @@ tests/api.test.ts          Pruebas de la API
 
 ## Fotos y videos de las obras
 
-Las fotos se publican en WebP: 1920 px de ancho para la web y 3840 px para el visor ampliado (archivos `*-8k.webp`).
+Las fotos se publican en WebP: 1920 px de ancho para la web y 3840 px para el visor ampliado (archivos `*-8k.webp`). Cada foto web tiene además variantes de 640 y 1280 px (`*-640.webp`, `*-1280.webp`) que las tarjetas y miniaturas cargan con `srcset`. Al agregar fotos, genéralas con `node scripts/imagenes-responsivas.mjs` (requiere ffmpeg). `npm test` falla si falta una variante o si un archivo supera su tope: 200 KB (640), 400 KB (1280), 1 MB (1920) y 3 MB (8K).
 
 Para agregar medios de una obra, sigue la guía en [docs/MEDIOS.md](docs/MEDIOS.md). En resumen:
 
@@ -138,4 +138,5 @@ Los originales y los videos comprimidos no se suben a git. Los videos deben aloj
 ## Flujo de trabajo
 
 - Trabaja en una rama por tarea y abre un pull request contra `main`.
-- Antes de mergear, verifica `npm run lint` y `npm run build`.
+- Cada PR y cada push a `main` pasan por la integración continua (`.github/workflows/ci.yml`): tipos, build con validación del contenido, pruebas de API y auditoría de dependencias de producción. Mergea solo con el check en verde.
+- Dependabot (`.github/dependabot.yml`) abre cada lunes un PR con las actualizaciones menores y de parche agrupadas; las versiones mayores llegan por separado.
