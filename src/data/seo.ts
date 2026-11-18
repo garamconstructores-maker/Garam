@@ -2,8 +2,8 @@
 // etiquetas del <head> y JSON-LD (dentro de index.html), robots.txt, sitemap.xml y llms.txt.
 import { COMPANY_INFO, PROJECTS, SERVICES } from './portfolioData';
 
-/** Dominio de producción: el Worker de Cloudflare sirve www.garam.com.co. */
-export const SITE_URL = 'https://www.garam.com.co';
+/** Dominio canónico (docs/decisiones/0003): los demás dominios redirigen aquí con 301. */
+export const SITE_URL = 'https://www.garamconstructores.com';
 const SITE_NAME = 'GARAM Constructores';
 
 // "GERENCIA DE PROYECTO" → "Gerencia de proyecto"
