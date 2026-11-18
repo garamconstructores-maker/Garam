@@ -24,6 +24,7 @@ Se descartó mantener Vercel: habría que pagar el plan Pro y mantener dos plata
 - La base de datos se decidió en [0002](0002-prospectos-en-d1.md): los prospectos se guardan en Cloudflare D1.
 - `/api/save-slide-image` escribe en `public/obras/` y no funciona en Workers. Si se necesita, las imágenes deben ir a R2.
 - Los límites de tasa viven en la memoria de cada instancia del Worker, así que son aproximados.
+- El dominio canónico cambió después a `www.garamconstructores.com`: ver [0003](0003-dominio-canonico.md).
 - Desde el 2026-11-18, `www.garam.com.co` y `garam.com.co` son dominios del Worker (`domains` en `cloudflare.config.ts`). Una regla de redirección de la zona envía `garam.com.co` a `www.garam.com.co` con 301, conservando ruta y parámetros.
 - Para volver a Vercel: quitar los dominios del Worker y recrear los CNAME de `garam.com.co` y `www.garam.com.co` hacia `d177616395cfbbe9.vercel-dns-017.com`, sin proxy.
 - Queda pendiente retirar el dominio del proyecto de Vercel.

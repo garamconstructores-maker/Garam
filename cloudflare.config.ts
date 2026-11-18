@@ -6,8 +6,9 @@ export default defineConfig({
     compatibilityDate: "2026-09-21",
     compatibilityFlags: ["nodejs_compat"],
     entrypoint: "./src/worker.ts",
-    // Dominio de producción; garam.com.co redirige a www con una regla de redirección de la zona.
-    domains: ["www.garam.com.co", "garam.com.co"],
+    // Dominio canónico: www.garamconstructores.com. Los demás hostnames existen para que las
+    // reglas de redirección de cada zona los envíen con 301 al canónico (ver docs/decisiones/0003).
+    domains: ["www.garamconstructores.com", "garamconstructores.com", "www.garam.com.co", "garam.com.co"],
     observability: {
       enabled: true,
     },
