@@ -57,6 +57,15 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose, isLightboxOpen, project]);
 
+  // Al abrir la ficha, el foco pasa al botón de cerrar; al cerrarla, vuelve a donde estaba.
+  const closeButtonRef = React.useRef<HTMLButtonElement>(null);
+  React.useEffect(() => {
+    if (!project) return;
+    const previous = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+    return () => previous?.focus();
+  }, [project]);
+
   if (!project) return null;
 
   const activeMedia = items[activeMediaIdx] || items[0];
@@ -68,6 +77,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/55 backdrop-blur-md overflow-y-auto animate-fade-in font-sans cursor-pointer"
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="project-detail-title"
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-5xl my-auto ios-glass-modal rounded-xl overflow-hidden flex flex-col max-h-[92vh] cursor-default"
       >
@@ -86,6 +98,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
 
           <div className="flex items-center gap-3">
             <button
+              ref={closeButtonRef}
               onClick={onClose}
               className="p-1.5 text-brand-muted hover:text-brand-ink hover:bg-brand-paper rounded-md transition-colors cursor-pointer"
               aria-label="Cerrar ficha"
@@ -100,7 +113,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
           
           {/* Main Title & Slogan */}
           <div className="space-y-2 border-b border-brand-stone pb-6">
-            <h2 className="font-editorial text-4xl font-normal tracking-tight text-brand-ink sm:text-6xl">
+            <h2 id="project-detail-title" className="font-editorial text-4xl font-normal tracking-tight text-brand-ink sm:text-6xl">
               {project.title}
             </h2>
             <p className="text-base sm:text-lg text-brand-muted font-normal">
