@@ -4,8 +4,8 @@ import type { Project } from '../types/portfolio';
 import { COMPANY_INFO, PROJECTS, SERVICES } from './portfolioData';
 import { projectPath } from './routes';
 
-/** Dominio de producción: el Worker de Cloudflare sirve www.garam.com.co. */
-export const SITE_URL = 'https://www.garam.com.co';
+/** Dominio canónico (docs/decisiones/0003): los demás dominios redirigen aquí con 301. */
+export const SITE_URL = 'https://www.garamconstructores.com';
 const SITE_NAME = 'GARAM Constructores';
 /** Título de la portada; coincide con el <title> de index.html. */
 export const HOME_TITLE = 'GARAM Constructores | De la visión a la obra';
