@@ -16,7 +16,7 @@
     "db:migrate": "cf d1 migrations apply b453f836-8bd6-4031-a2e1-57be9db6e27b"
   },
   "dependencies": {
-    "@google/genai": "2.32.0",
+    "@google/genai": "3.3.0",
     "dotenv": "17.4.2",
     "drizzle-orm": "0.45.4",
     "express": "5.3.0",
