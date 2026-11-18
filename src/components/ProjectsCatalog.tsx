@@ -207,10 +207,19 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                             <div className="font-mono tabular-nums text-brand-ink font-semibold">
                               {flagship.area}
                             </div>
-                            <span className="font-semibold text-brand-ink group-hover:text-brand-copper transition-colors flex items-center gap-1">
+                            {/* Botón real: con teclado la tarjeta se abre desde aquí (Tab + Enter). */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onSelectProject(flagship);
+                              }}
+                              aria-label={`Ver Ficha Técnica de ${flagship.title}`}
+                              className="font-semibold text-brand-ink group-hover:text-brand-copper transition-colors flex items-center gap-1 rounded-sm cursor-pointer"
+                            >
                               <span>Ver Ficha Técnica</span>
-                              <ArrowUpRight className="w-3.5 h-3.5" />
-                            </span>
+                              <ArrowUpRight aria-hidden="true" className="w-3.5 h-3.5" />
+                            </button>
                           </div>
                         </div>
 
@@ -280,10 +289,19 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                           <span className="font-mono tabular-nums text-brand-muted">
                             {project.area}
                           </span>
-                          <span className="font-semibold text-brand-ink group-hover:text-brand-copper transition-colors flex items-center gap-1">
+                          {/* Botón real: con teclado la tarjeta se abre desde aquí (Tab + Enter). */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onSelectProject(project);
+                            }}
+                            aria-label={`Ver ficha técnica de ${project.title}`}
+                            className="font-semibold text-brand-ink group-hover:text-brand-copper transition-colors flex items-center gap-1 rounded-sm cursor-pointer"
+                          >
                             <span>Ver ficha técnica</span>
-                            <ArrowUpRight className="w-3.5 h-3.5" />
-                          </span>
+                            <ArrowUpRight aria-hidden="true" className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </motion.div>
                     </FadeIn>
