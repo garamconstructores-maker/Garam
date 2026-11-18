@@ -5,10 +5,10 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import rateLimit from 'express-rate-limit';
-import { count, desc } from 'drizzle-orm';
+import { count, desc, gte, sql } from 'drizzle-orm';
 import { db } from './db/index.js';
-import { leadExportColumns, leads } from './db/schema.js';
-import { chatSchema, leadSchema } from '../shared/apiContracts.js';
+import { funnelCounts, leadExportColumns, leads } from './db/schema.js';
+import { chatSchema, funnelEventSchema, leadSchema } from '../shared/apiContracts.js';
 import { COMPANY_INFO, PROJECTS, SERVICES, VALUE_PILLARS, SLIDES_DATA } from '../data/portfolioData.js';
 
 dotenv.config();
@@ -316,6 +316,7 @@ app.post('/api/estimate', estimateLimiter, async (req, res) => {
       location: inquiry.location,
       timeline: inquiry.timeline,
       comments: inquiry.comments || null,
+      origin: inquiry.origin || null,
     });
 
     console.log(`[LEAD REGISTRADO] Referencia: ${referenceId}`);
@@ -328,6 +329,51 @@ app.post('/api/estimate', estimateLimiter, async (req, res) => {
   } catch (error) {
     console.error('Error persisting lead:', error);
     return res.status(500).json({ error: 'No pudimos guardar la solicitud. Intente nuevamente.' });
+  }
+});
+
+// Embudo de contacto: el navegador suma 1 al evento (sin datos personales ni IP guardada).
+const funnelLimiter = lazyRateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.post('/api/eventos', funnelLimiter, async (req, res) => {
+  const parsed = funnelEventSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: 'Evento no válido' });
+  const { event, origin = '' } = parsed.data;
+  const day = new Date().toISOString().slice(0, 10);
+  try {
+    await db
+      .insert(funnelCounts)
+      .values({ day, event, origin, count: 1 })
+      .onConflictDoUpdate({
+        target: [funnelCounts.day, funnelCounts.event, funnelCounts.origin],
+        set: { count: sql`${funnelCounts.count} + 1` },
+      });
+    return res.status(204).end();
+  } catch (error) {
+    console.error('Error counting funnel event:', error);
+    return res.status(500).json({ error: 'No se pudo registrar el evento' });
+  }
+});
+
+// Resumen del embudo para administración (?dias=30 por defecto).
+app.get('/api/eventos/resumen', adminLimiter, requireAdmin, async (req, res) => {
+  const days = Math.min(Math.max(Number(req.query.dias) || 30, 1), 365);
+  const since = new Date(Date.now() - (days - 1) * 86_400_000).toISOString().slice(0, 10);
+  try {
+    const rows = await db
+      .select({ event: funnelCounts.event, origin: funnelCounts.origin, total: sql<number>`sum(${funnelCounts.count})` })
+      .from(funnelCounts)
+      .where(gte(funnelCounts.day, since))
+      .groupBy(funnelCounts.event, funnelCounts.origin);
+    return res.json({ desde: since, dias: days, eventos: rows });
+  } catch (error) {
+    console.error('Error reading funnel:', error);
+    return res.status(500).json({ error: 'No se pudo leer el embudo' });
   }
 });
 

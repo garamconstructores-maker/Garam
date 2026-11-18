@@ -14,6 +14,7 @@ import { Project } from './types/portfolio';
 import { PROJECTS } from './data/portfolioData';
 import { projectIdFromPath, projectPath } from './data/routes';
 import { HOME_TITLE, projectPageMeta } from './data/seo';
+import { slugify, track } from './utils/track';
 
 const findProject = (id: string | null | undefined) => PROJECTS.find((p) => p.id === id) ?? null;
 
@@ -25,7 +26,8 @@ interface AppProps {
 export default function App({ initialProjectId = null }: AppProps) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(() => findProject(initialProjectId));
   const [isInquiryOpen, setIsInquiryOpen] = useState<boolean>(false);
-  const [selectedServiceForInquiry, setSelectedServiceForInquiry] = useState<string | undefined>(undefined);
+  // Contexto del formulario: desde dónde se abrió y, si aplica, el servicio o la obra de referencia.
+  const [inquiry, setInquiry] = useState<{ origin: string; service?: string; project?: Project }>({ origin: 'sitio' });
   const [isAiConsultantOpen, setIsAiConsultantOpen] = useState<boolean>(false);
 
   // Master Dismiss All function to close all open modals/drawers
@@ -76,11 +78,19 @@ export default function App({ initialProjectId = null }: AppProps) {
     };
   }, [hasAnyModalOpen]);
 
-  const handleSelectServiceForInquiry = (serviceTitle: string) => {
+  const openInquiry = (origin: string, context: { service?: string; project?: Project } = {}) => {
     dismissAllModals();
-    setSelectedServiceForInquiry(serviceTitle);
+    setInquiry({ origin, ...context });
     setIsInquiryOpen(true);
   };
+
+  const handleSelectServiceForInquiry = (serviceTitle: string) =>
+    openInquiry(`servicio:${slugify(serviceTitle)}`, { service: serviceTitle });
+
+  // Embudo: cada ficha abierta cuenta como interés en esa obra.
+  useEffect(() => {
+    if (selectedProject) track('ficha_abierta', `ficha:${selectedProject.id}`);
+  }, [selectedProject]);
 
   return (
     <div className="min-h-screen bg-brand-paper text-brand-ink flex flex-col font-sans selection:bg-brand-copper selection:text-white">
@@ -89,16 +99,8 @@ export default function App({ initialProjectId = null }: AppProps) {
       
       {/* Top Header Navigation */}
       <Header
-        onOpenPresentation={() => {
-          dismissAllModals();
-          setSelectedServiceForInquiry(undefined);
-          setIsInquiryOpen(true);
-        }}
-        onOpenInquiry={() => {
-          dismissAllModals();
-          setSelectedServiceForInquiry(undefined);
-          setIsInquiryOpen(true);
-        }}
+        onOpenPresentation={() => openInquiry('header')}
+        onOpenInquiry={() => openInquiry('header')}
         onToggleAiConsultant={() => {
           setIsAiConsultantOpen((prev) => !prev);
         }}
@@ -113,11 +115,7 @@ export default function App({ initialProjectId = null }: AppProps) {
             const obrasEl = document.getElementById('obras');
             obrasEl?.scrollIntoView({ behavior: 'smooth' });
           }}
-          onOpenInquiry={() => {
-            dismissAllModals();
-            setSelectedServiceForInquiry(undefined);
-            setIsInquiryOpen(true);
-          }}
+          onOpenInquiry={() => openInquiry('hero')}
         />
 
         {/* 01 · Projects Catalog Section - 11 Obras Completas */}
@@ -144,11 +142,7 @@ export default function App({ initialProjectId = null }: AppProps) {
           const obrasEl = document.getElementById('obras');
           obrasEl?.scrollIntoView({ behavior: 'smooth' });
         }}
-        onOpenInquiry={() => {
-          dismissAllModals();
-          setSelectedServiceForInquiry(undefined);
-          setIsInquiryOpen(true);
-        }}
+        onOpenInquiry={() => openInquiry('footer')}
       />
 
       {/* Project Detail Dossier Modal */}
@@ -156,6 +150,7 @@ export default function App({ initialProjectId = null }: AppProps) {
         <ProjectDetailModal
           project={selectedProject}
           onClose={() => setSelectedProject(null)}
+          onRequestSimilar={(project) => openInquiry(`ficha:${project.id}`, { project })}
         />
       )}
 
@@ -164,7 +159,9 @@ export default function App({ initialProjectId = null }: AppProps) {
         <InquiryModal
           isOpen={isInquiryOpen}
           onClose={() => setIsInquiryOpen(false)}
-          preselectedService={selectedServiceForInquiry}
+          preselectedService={inquiry.service}
+          referenceProject={inquiry.project}
+          origin={inquiry.origin}
         />
       )}
 
@@ -173,20 +170,13 @@ export default function App({ initialProjectId = null }: AppProps) {
         <AiConsultantDrawer
           isOpen={isAiConsultantOpen}
           onClose={() => setIsAiConsultantOpen(false)}
-          onOpenInquiry={() => {
-            dismissAllModals();
-            setIsInquiryOpen(true);
-          }}
+          onOpenInquiry={() => openInquiry('asesor')}
         />
       )}
 
       {/* Floating VIP Concierge & WhatsApp Lead Capture Widget */}
       <VipConciergeWidget
-        onOpenInquiry={() => {
-          dismissAllModals();
-          setSelectedServiceForInquiry(undefined);
-          setIsInquiryOpen(true);
-        }}
+        onOpenInquiry={() => openInquiry('concierge')}
         onOpenAiConsultant={() => {
           dismissAllModals();
           setIsAiConsultantOpen(true);

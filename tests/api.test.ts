@@ -135,6 +135,66 @@ describe('GARAM Constructores - API & Security Hardening Tests', () => {
     assert.ok((await csvRes.text()).startsWith('referenceId,createdAt,name'));
   });
 
+  test('POST /api/estimate stores the origin and the export returns it', { skip: !ADMIN_KEY }, async () => {
+    const res = await fetch(`${BASE_URL}/api/estimate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'Prueba Origen',
+        phone: '+584120001133',
+        service: 'Residencial',
+        area: '500 - 1.500 m²',
+        location: 'Galipán / El Ávila',
+        timeline: 'Por definir',
+        origin: 'ficha:casa-am',
+        consent: true,
+      }),
+    });
+    assert.equal(res.status, 201);
+    const exported = await (await fetch(`${BASE_URL}/api/leads/export?format=json`, { headers: { 'x-admin-key': ADMIN_KEY } })).json();
+    const lead = exported.leads.find((l: any) => l.name === 'Prueba Origen');
+    assert.equal(lead?.origin, 'ficha:casa-am');
+  });
+
+  test('POST /api/estimate rejects an origin with invalid characters', async () => {
+    const res = await fetch(`${BASE_URL}/api/estimate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'X', phone: '+584120001133', service: 'Residencial', area: '1', location: 'Caracas', timeline: 'Ya', origin: '<script>', consent: true }),
+    });
+    assert.equal(res.status, 400);
+  });
+
+  test('POST /api/eventos counts funnel events and rejects unknown ones', async () => {
+    const ok = await fetch(`${BASE_URL}/api/eventos`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event: 'ficha_abierta', origin: 'ficha:fendi' }),
+    });
+    assert.equal(ok.status, 204);
+    const bad = await fetch(`${BASE_URL}/api/eventos`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event: 'clic_cualquiera' }),
+    });
+    assert.equal(bad.status, 400);
+  });
+
+  test('GET /api/eventos/resumen is protected and sums the events', { skip: !ADMIN_KEY }, async () => {
+    const anonymous = await fetch(`${BASE_URL}/api/eventos/resumen`);
+    assert.ok([401, 503].includes(anonymous.status));
+    await fetch(`${BASE_URL}/api/eventos`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event: 'ficha_abierta', origin: 'ficha:fendi' }),
+    });
+    const res = await fetch(`${BASE_URL}/api/eventos/resumen?dias=7`, { headers: { 'x-admin-key': ADMIN_KEY } });
+    assert.equal(res.status, 200);
+    const data = await res.json();
+    const row = data.eventos.find((e: any) => e.event === 'ficha_abierta' && e.origin === 'ficha:fendi');
+    assert.ok(row && Number(row.total) >= 2, 'el embudo debe sumar los dos eventos');
+  });
+
   test('GET /api/leads/export must remain protected for both formats', async () => {
     const jsonRes = await fetch(`${BASE_URL}/api/leads/export?format=json`);
     const csvRes = await fetch(`${BASE_URL}/api/leads/export?format=csv`);
