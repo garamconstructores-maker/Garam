@@ -12,7 +12,8 @@ const rootDir = typeof import.meta.dirname !== 'undefined'
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss(), cloudflare()],
+    // El build SSR del prerenderizado (scripts/prerender.mjs) no usa el plugin de Cloudflare.
+    plugins: [react(), tailwindcss(), ...(process.env.GARAM_PRERENDER ? [] : [cloudflare()])],
     resolve: {
       alias: {
         '@': path.resolve(rootDir, '.'),

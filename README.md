@@ -54,8 +54,8 @@ npm run dev             # http://localhost:5173
 | Comando | Qué hace |
 |---|---|
 | `npm run dev` | Servidor de desarrollo de Cloudflare (`cf dev`): Vite y el Worker de la API |
-| `npm run build` | Verifica tipos y genera el build para Cloudflare en `.cloudflare/output/` |
-| `npm run deploy` | Construye y despliega el Worker (`cf deploy`) |
+| `npm run build` | Verifica tipos, genera el build para Cloudflare en `.cloudflare/output/` y prerenderiza el HTML |
+| `npm run deploy` | Ejecuta `npm run build` y despliega ese build (`cf deploy --prebuilt`) |
 | `npm run lint` | Verifica tipos con `tsc --noEmit` |
 | `npm run test` | Pruebas de la API. Requieren `npm run dev` corriendo (o `BASE_URL`) |
 | `npm run clean` | Elimina `dist/` |
