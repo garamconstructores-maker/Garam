@@ -237,7 +237,8 @@ app.post('/api/chat/consultant', aiConsultantLimiter, async (req, res) => {
       });
     }
 
-    const ai = new GoogleGenAI({ apiKey });
+    // @google/genai 3 usa v1 por defecto; v1beta mantiene el comportamiento y los modelos de la versión 2.
+    const ai = new GoogleGenAI({ apiKey, apiVersion: 'v1beta' });
 
     const systemInstruction = `
 Eres el Asesor Técnico y Arquitectónico de GARAM Constructores (Portafolio 2026).
