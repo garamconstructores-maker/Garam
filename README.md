@@ -121,4 +121,5 @@ Los originales y los videos comprimidos no se suben a git. Los videos deben aloj
 ## Flujo de trabajo
 
 - Trabaja en una rama por tarea y abre un pull request contra `main`.
-- Antes de mergear, verifica `npm run lint` y `npm run build`.
+- Cada PR y cada push a `main` pasan por la integración continua (`.github/workflows/ci.yml`): tipos, build con validación del contenido, pruebas de API y auditoría de dependencias de producción. Mergea solo con el check en verde.
+- Dependabot (`.github/dependabot.yml`) abre cada lunes un PR con las actualizaciones menores y de parche agrupadas; las versiones mayores llegan por separado.

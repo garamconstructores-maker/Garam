@@ -1,0 +1,19 @@
+# Actualizaciones automáticas de dependencias (P-19): un PR por grupo cada lunes.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: America/Caracas
+    open-pull-requests-limit: 5
+    groups:
+      # Parches y versiones menores juntos; las mayores, una por una.
+      menores-y-parches:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
