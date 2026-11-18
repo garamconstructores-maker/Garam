@@ -8,6 +8,10 @@ updates:
       day: monday
       timezone: America/Caracas
     open-pull-requests-limit: 5
+    ignore:
+      # Los tipos de Node deben seguir a la versión de Node de la CI (24), no a la última.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     groups:
       # Parches y versiones menores juntos; las mayores, una por una.
       menores-y-parches:
