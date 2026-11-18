@@ -114,7 +114,7 @@ Los originales y los videos comprimidos no se suben a git. Los videos deben aloj
 
 - Se valida con los esquemas de `src/data/schema.ts`. El build falla si una obra no cumple (por ejemplo, un estatus fuera de la lista o un `id` repetido) o si una imagen referenciada no existe en `public/`. Un video ausente solo genera un aviso, porque los videos se alojan fuera de git.
 - Se generan desde `src/data/seo.ts`, y no se editan a mano: el canonical, `og:url` y las imágenes para redes de `index.html`, el JSON-LD, `robots.txt`, `sitemap.xml` y `llms.txt`. El dominio está en `SITE_URL`.
-- `public/_headers` marca con `X-Robots-Tag: noindex` las URL de `workers.dev`, para que solo se indexe `www.garam.com.co`.
+- `public/_headers` marca con `X-Robots-Tag: noindex` las URL de `workers.dev`, para que solo se indexe `www.garamconstructores.com`.
 
 ## Clave de administración
 
