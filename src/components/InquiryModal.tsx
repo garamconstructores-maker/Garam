@@ -24,14 +24,8 @@ const PROJECT_TYPES = [
   { value: 'Urbanismo', hint: 'Terrazas, vialidad, parcelas' },
 ];
 const ROLES = ['Propietario o inversionista', 'Desarrollador inmobiliario', 'Estudio de arquitectura', 'Empresa o corporativo'];
-const LOCATIONS = [
-  'Altamira / La Castellana / Country Club',
-  'Valle Arriba / Las Mercedes / El Rosal',
-  'Galipán / El Ávila',
-  'Otra zona de Caracas',
-  'Fuera de Caracas',
-];
-const AREAS = ['Menos de 500 m²', '500 - 1.500 m²', '1.500 - 5.000 m²', 'Más de 5.000 m²'];
+// Sugerencias al escribir la ubicación; la persona puede poner cualquier lugar.
+const ZONE_SUGGESTIONS = ['Altamira, Caracas', 'La Castellana, Caracas', 'Las Mercedes, Caracas', 'El Rosal, Caracas', 'Valle Arriba, Caracas', 'Galipán, La Guaira'];
 const TIMELINES = ['Este año', 'El próximo año', 'Más adelante', 'Por definir'];
 const STEPS = ['Tu proyecto', 'Ubicación y escala', 'Contacto'];
 
@@ -60,8 +54,9 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ isOpen, onClose, pre
   const [step, setStep] = useState(0);
   const [projectType, setProjectType] = useState<string>(referenceProject?.category ?? 'Residencial');
   const [role, setRole] = useState(ROLES[0]);
-  const [location, setLocation] = useState(LOCATIONS[0]);
-  const [area, setArea] = useState(AREAS[1]);
+  const [location, setLocation] = useState('');
+  // Superficie en m², solo números ("1500"); se envía como "1.500 m²".
+  const [area, setArea] = useState('');
   const [timeline, setTimeline] = useState(TIMELINES[3]);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -96,8 +91,13 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ isOpen, onClose, pre
     preselectedService && `Servicio: ${preselectedService}`,
   ].filter(Boolean) as string[];
 
+  const areaM2 = Number(area);
+  const areaLabel = areaM2 > 0 ? `${areaM2.toLocaleString('es-VE')} m²` : '';
+
   const goNext = () => {
     setError(null);
+    if (step === 1 && location.trim().length < 2) return setError('Escribe dónde está o estará el proyecto.');
+    if (step === 1 && !(areaM2 > 0)) return setError('Escribe la superficie aproximada en metros cuadrados.');
     const next = step + 1;
     track(next === 1 ? 'formulario_paso_2' : 'formulario_paso_3', origin);
     setStep(next);
@@ -111,8 +111,8 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ isOpen, onClose, pre
       email,
       phone,
       service: projectType,
-      area,
-      location,
+      area: areaLabel,
+      location: location.trim(),
       timeline,
       comments: [...context, `Perfil: ${role}`, comments.trim()].filter(Boolean).join(' · '),
       origin,
@@ -143,7 +143,7 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ isOpen, onClose, pre
 
   const whatsAppUrl = buildWhatsAppUrl(
     encodeURIComponent(
-      `Hola GARAM. Envié la solicitud ${successRef ?? ''} desde la web: proyecto ${projectType} en ${location}, ${area}, plazo: ${timeline.toLowerCase()}.` +
+      `Hola GARAM. Envié la solicitud ${successRef ?? ''} desde la web: proyecto ${projectType} en ${location.trim()}, ${areaLabel}, plazo: ${timeline.toLowerCase()}.` +
         (referenceProject ? ` Me interesa algo como ${referenceProject.title}.` : ''),
     ),
   );
@@ -260,20 +260,43 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ isOpen, onClose, pre
 
               {step === 1 && (
                 <>
-                  <Field label="Ubicación">
-                    <div className="grid grid-cols-1 gap-2">
-                      {LOCATIONS.map((l) => (
-                        <Choice key={l} label={l} selected={location === l} onClick={() => setLocation(l)} />
+                  <label className="block space-y-1.5">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-brand-muted">Ubicación</span>
+                    <input
+                      required
+                      minLength={2}
+                      maxLength={160}
+                      list="inquiry-zones"
+                      autoComplete="address-level2"
+                      placeholder="Ej.: Altamira, Caracas"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      className="w-full rounded-md border border-brand-stone px-3 py-2.5 text-sm focus:border-brand-ink focus:outline-none"
+                    />
+                    <datalist id="inquiry-zones">
+                      {ZONE_SUGGESTIONS.map((z) => (
+                        <option key={z} value={z} />
                       ))}
+                    </datalist>
+                  </label>
+                  <label className="block space-y-1.5">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-brand-muted">Superficie aproximada</span>
+                    <div className="flex items-center rounded-md border border-brand-stone focus-within:border-brand-ink">
+                      <input
+                        required
+                        type="number"
+                        inputMode="numeric"
+                        min={1}
+                        max={9999999}
+                        step={1}
+                        placeholder="Ej.: 1500"
+                        value={area}
+                        onChange={(e) => setArea(e.target.value)}
+                        className="w-full rounded-md px-3 py-2.5 text-sm focus:outline-none"
+                      />
+                      <span className="pr-3 text-sm text-brand-muted">m²</span>
                     </div>
-                  </Field>
-                  <Field label="Superficie aproximada">
-                    <div className="grid grid-cols-2 gap-2">
-                      {AREAS.map((a) => (
-                        <Choice key={a} label={a} selected={area === a} onClick={() => setArea(a)} />
-                      ))}
-                    </div>
-                  </Field>
+                  </label>
                   <Field label="¿Cuándo quieres empezar?">
                     <div className="grid grid-cols-2 gap-2">
                       {TIMELINES.map((t) => (
