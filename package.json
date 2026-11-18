@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "lint": "tsc --noEmit",
-    "test": "tsx --test tests/api.test.ts",
+    "test": "tsx --test tests/imagenes.test.ts tests/api.test.ts",
     "deploy": "npm run build && cf deploy --prebuilt",
     "db:migrate:local": "cf d1 migrations apply b453f836-8bd6-4031-a2e1-57be9db6e27b --local",
     "db:migrate": "cf d1 migrations apply b453f836-8bd6-4031-a2e1-57be9db6e27b"

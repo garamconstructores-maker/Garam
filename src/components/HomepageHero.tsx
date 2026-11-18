@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowDown, ArrowUpRight } from 'lucide-react';
 import { PROJECTS } from '../data/portfolioData';
 import { FadeIn, StaggerContainer, StaggerItem } from './MotionReveal';
+import { responsiveSrcSet } from '../utils/responsiveImage';
 
 interface HomepageHeroProps {
   onOpenPresentation: () => void;
@@ -73,6 +74,8 @@ export const HomepageHero: React.FC<HomepageHeroProps> = ({
       <div className="hero-film__grid absolute inset-0" />
       <img
         src={HERO_POSTER}
+        srcSet={responsiveSrcSet(HERO_POSTER)}
+        sizes="100vw"
         alt=""
         fetchPriority="high"
         loading="eager"

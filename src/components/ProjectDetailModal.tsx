@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Project } from '../types/portfolio';
 import { handleImageError } from '../utils/imageFallback';
 import { BeforeAfterSlider } from './BeforeAfterSlider';
+import { variantUrl } from '../utils/responsiveImage';
 
 import {
   X,
@@ -264,7 +265,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                     }`}
                   >
                     <img
-                      src={media.url}
+                      src={variantUrl(media.url, 640)}
                       alt={media.caption}
                       referrerPolicy="no-referrer"
                       style={{ imageRendering: '-webkit-optimize-contrast' }}
