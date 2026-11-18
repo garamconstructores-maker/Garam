@@ -113,7 +113,8 @@ Los originales y los videos comprimidos no se suben a git. Los videos deben aloj
 `src/data/portfolioData.ts` es la única fuente de las obras y los servicios. En cada `npm run build`:
 
 - Se valida con los esquemas de `src/data/schema.ts`. El build falla si una obra no cumple (por ejemplo, un estatus fuera de la lista o un `id` repetido) o si una imagen referenciada no existe en `public/`. Un video ausente solo genera un aviso, porque los videos se alojan fuera de git.
-- Se generan el JSON-LD de `index.html`, `sitemap.xml` y `llms.txt` (`src/data/seo.ts`). No se editan a mano.
+- Se generan desde `src/data/seo.ts`, y no se editan a mano: el canonical, `og:url` y las imágenes para redes de `index.html`, el JSON-LD, `robots.txt`, `sitemap.xml` y `llms.txt`. El dominio está en `SITE_URL`.
+- `public/_headers` marca con `X-Robots-Tag: noindex` las URL de `workers.dev`, para que solo se indexe `www.garam.com.co`.
 
 ## Despliegue
 

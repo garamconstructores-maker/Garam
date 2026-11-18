@@ -1,6 +1,7 @@
 // Después de cf build: valida el contenido de portfolioData.ts, inserta el HTML
-// renderizado y el JSON-LD en el index.html que sube Cloudflare, escribe
-// sitemap.xml y llms.txt, y borra el build de servidor. Uso: npm run build.
+// renderizado, las etiquetas de SEO y el JSON-LD en el index.html que sube
+// Cloudflare, escribe robots.txt, sitemap.xml y llms.txt, y borra el build de
+// servidor. Uso: npm run build.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -11,7 +12,7 @@ const ASSETS = path.join(ROOT, '.cloudflare', 'output', 'v1', 'workers', 'defaul
 const SSR_DIR = path.join(ROOT, 'dist-ssr');
 const PUBLIC_DIR = path.join(ROOT, 'public');
 const ROOT_PLACEHOLDER = '<div id="root"></div>';
-const JSON_LD_PLACEHOLDER = '<!--json-ld-->';
+const SEO_HEAD_PLACEHOLDER = '<!--seo-head-->';
 
 const fail = (message) => {
   console.error(message);
@@ -29,10 +30,10 @@ if (errors.length) fail(`El contenido de portfolioData.ts no es válido:\n- ${er
 // Los videos se alojan fuera de git, así que su ausencia solo se avisa.
 for (const p of missing(videos)) console.warn(`Aviso: video inexistente en public/: ${p}`);
 
-// 2. HTML prerenderizado y JSON-LD.
+// 2. HTML prerenderizado, etiquetas de SEO y JSON-LD.
 const indexPath = path.join(ASSETS, 'index.html');
 const template = fs.readFileSync(indexPath, 'utf8');
-for (const placeholder of [ROOT_PLACEHOLDER, JSON_LD_PLACEHOLDER]) {
+for (const placeholder of [ROOT_PLACEHOLDER, SEO_HEAD_PLACEHOLDER]) {
   if (!template.includes(placeholder)) fail(`No se encontró ${placeholder} en ${indexPath}`);
 }
 
@@ -45,17 +46,19 @@ const jsonLd = JSON.stringify(ssr.buildJsonLd()).replace(/</g, '\\u003c');
 fs.writeFileSync(
   indexPath,
   template
-    .replace(JSON_LD_PLACEHOLDER, `<script type="application/ld+json">${jsonLd}</script>`)
+    .replace(SEO_HEAD_PLACEHOLDER, `${ssr.buildHeadTags()}
+    <script type="application/ld+json">${jsonLd}</script>`)
     .replace(ROOT_PLACEHOLDER, `<div id="root">${appHtml}</div>`),
 );
 
 // 3. Archivos para buscadores e IA.
 const today = new Date().toISOString().slice(0, 10);
+fs.writeFileSync(path.join(ASSETS, 'robots.txt'), ssr.buildRobotsTxt());
 fs.writeFileSync(path.join(ASSETS, 'sitemap.xml'), ssr.buildSitemap(today));
 fs.writeFileSync(path.join(ASSETS, 'llms.txt'), ssr.buildLlmsTxt());
 
 fs.rmSync(SSR_DIR, { recursive: true, force: true });
 console.log(
   `Prerenderizado: ${path.relative(ROOT, indexPath)} (${Math.round(appHtml.length / 1024)} KB de HTML), ` +
-    `${images.length} imágenes verificadas, sitemap.xml y llms.txt`,
+    `${images.length} imágenes verificadas, robots.txt, sitemap.xml y llms.txt`,
 );

@@ -6,7 +6,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { PROJECTS, SERVICES } from './data/portfolioData';
 import { mediaPaths, validateContent } from './data/schema';
 
-export { buildJsonLd, buildLlmsTxt, buildSitemap } from './data/seo';
+export { buildHeadTags, buildJsonLd, buildLlmsTxt, buildRobotsTxt, buildSitemap } from './data/seo';
 
 export function render(): string {
   return renderToString(

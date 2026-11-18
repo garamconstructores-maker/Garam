@@ -1,5 +1,5 @@
 // Archivos para buscadores e IA generados desde portfolioData.ts en el build:
-// JSON-LD (dentro de index.html), sitemap.xml y llms.txt.
+// etiquetas del <head> y JSON-LD (dentro de index.html), robots.txt, sitemap.xml y llms.txt.
 import { COMPANY_INFO, PROJECTS, SERVICES } from './portfolioData';
 
 /** Dominio de producción: el Worker de Cloudflare sirve www.garam.com.co. */
@@ -52,6 +52,21 @@ export function buildJsonLd() {
       },
     ],
   };
+}
+
+/** Canonical y URLs absolutas para redes sociales; las relativas no las leen WhatsApp ni LinkedIn. */
+export function buildHeadTags(): string {
+  const image = `${SITE_URL}/og-image.jpg`;
+  return [
+    `<link rel="canonical" href="${SITE_URL}/" />`,
+    `<meta property="og:url" content="${SITE_URL}/" />`,
+    `<meta property="og:image" content="${image}" />`,
+    `<meta name="twitter:image" content="${image}" />`,
+  ].join('\n    ');
+}
+
+export function buildRobotsTxt(): string {
+  return ['User-agent: *', 'Allow: /', 'Disallow: /api/', '', `Sitemap: ${SITE_URL}/sitemap.xml`, ''].join('\n');
 }
 
 export function buildSitemap(lastmod: string): string {
