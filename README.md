@@ -19,7 +19,7 @@ El sitio presenta las obras de la empresa, permite solicitar una cotización y r
 |---|---|
 | Frontend | React 19, Vite 8, Tailwind CSS 4, Framer Motion, lucide-react |
 | Backend | Express (`src/server/app.ts`) en un Worker de Cloudflare, express-rate-limit, Zod |
-| Datos | PostgreSQL con Drizzle ORM. Respaldo local en `data/leads.json`, solo para desarrollo |
+| Datos | Cloudflare D1 (SQLite) con Drizzle ORM; migraciones en `migrations/` |
 | IA | `@google/genai` (Gemini) |
 | Medios | ffmpeg y ffprobe, para procesar fotos y videos (`scripts/procesar-medios.mjs`) |
 
@@ -42,12 +42,11 @@ npm run dev             # http://localhost:5173
 | Variable | Obligatoria | Uso |
 |---|---|---|
 | `GEMINI_API_KEY` | Para el asesor IA | Sin ella, el chat responde que está en mantenimiento. |
-| `DATABASE_URL` | En producción | Conexión a PostgreSQL. Si falta, los prospectos se guardan en `data/leads.json`. |
 | `ADMIN_API_KEY` | Para administración | Clave de la cabecera `x-admin-key`. Sin ella, los endpoints de administración responden 503. |
 | `VITE_WHATSAPP_NUMBER` | Antes de publicar | Número comercial de WhatsApp, solo dígitos y con código de país. |
 | `PORT` | No | Puerto del servidor. Por defecto, 3000. |
 
-> `data/leads.json` contiene datos personales de clientes y está excluido de git. No lo subas al repositorio.
+> La base D1 `garam-leads` guarda datos personales de clientes. En local, `cf dev` usa una copia simulada en `.cloudflare/state/`, excluida de git. Antes de la primera prueba local, ejecuta `npm run db:migrate:local`.
 
 ## Scripts
 
@@ -56,6 +55,8 @@ npm run dev             # http://localhost:5173
 | `npm run dev` | Servidor de desarrollo de Cloudflare (`cf dev`): Vite y el Worker de la API |
 | `npm run build` | Verifica tipos, genera el build para Cloudflare en `.cloudflare/output/` y prerenderiza el HTML |
 | `npm run deploy` | Ejecuta `npm run build` y despliega ese build (`cf deploy --prebuilt`) |
+| `npm run db:migrate:local` | Aplica las migraciones de `migrations/` a la base D1 local |
+| `npm run db:migrate` | Aplica las migraciones a la base D1 de producción |
 | `npm run lint` | Verifica tipos con `tsc --noEmit` |
 | `npm run test` | Pruebas de la API. Requieren `npm run dev` corriendo (o `BASE_URL`) |
 | `npm run clean` | Elimina `dist/` |
@@ -107,7 +108,7 @@ Los originales y los videos comprimidos no se suben a git. Los videos deben aloj
 
 ## Despliegue
 
-- El sitio y la API se despliegan como un Worker de Cloudflare con `npm run deploy`. Las claves de producción se cargan como secretos del Worker. Detalles en [docs/decisiones/0001-api-en-cloudflare-workers.md](docs/decisiones/0001-api-en-cloudflare-workers.md).
+- El sitio y la API se despliegan como un Worker de Cloudflare con `npm run deploy`. Las claves de producción se cargan como secretos del Worker. Detalles en [docs/decisiones/0001-api-en-cloudflare-workers.md](docs/decisiones/0001-api-en-cloudflare-workers.md) y [docs/decisiones/0002-prospectos-en-d1.md](docs/decisiones/0002-prospectos-en-d1.md).
 - La imagen para redes sociales es `public/og-image.jpg` (1200 × 630 px).
 
 ## Flujo de trabajo

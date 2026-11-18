@@ -159,11 +159,11 @@ app.get('/api/health', async (_req, res) => {
       service: 'GARAM Constructores API',
       version: '2026.1.0',
       geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
-      databaseConfigured: Boolean(process.env.DATABASE_URL),
+      databaseConfigured: true,
       metrics: { memoryRssMb: Math.round(mem.rss / (1024 * 1024)), memoryHeapUsedMb: Math.round(mem.heapUsed / (1024 * 1024)), persistedLeadsCount: leadsCount },
     });
   } catch {
-    return res.status(503).json({ status: 'degraded', databaseConfigured: Boolean(process.env.DATABASE_URL) });
+    return res.status(503).json({ status: 'degraded', databaseConfigured: false });
   }
 });
 

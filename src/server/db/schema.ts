@@ -1,9 +1,10 @@
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
-export const leads = pgTable('leads', {
-  id: uuid('id').defaultRandom().primaryKey(),
+// Tabla de prospectos en D1 (SQLite). La migración vive en migrations/.
+export const leads = sqliteTable('leads', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
   referenceId: text('reference_id').notNull().unique(),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull().$defaultFn(() => new Date()),
   clientIp: text('client_ip'),
   name: text('name').notNull(),
   email: text('email'),
@@ -14,7 +15,7 @@ export const leads = pgTable('leads', {
   timeline: text('timeline').notNull(),
   comments: text('comments'),
   status: text('status').notNull().default('new'),
-  consentAt: timestamp('consent_at', { withTimezone: true }).notNull().defaultNow(),
+  consentAt: integer('consent_at', { mode: 'timestamp_ms' }).notNull().$defaultFn(() => new Date()),
 });
 
 export type Lead = typeof leads.$inferSelect;

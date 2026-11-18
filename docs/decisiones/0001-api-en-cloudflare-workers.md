@@ -20,9 +20,8 @@ Se descartó mantener Vercel: habría que pagar el plan Pro y mantener dos plata
 
 ## Consecuencias
 
-- Secretos del Worker en producción: `GEMINI_API_KEY`, `ADMIN_API_KEY` y `DATABASE_URL`. En local van en `.dev.vars` (ver `.dev.vars.example`).
-- En Workers no hay disco persistente. Sin `DATABASE_URL`, `/api/estimate` responde 500 en vez de aceptar la solicitud y perderla.
-- Pendiente al elegir la base de datos: conectar PostgreSQL con Hyperdrive y crear la conexión por solicitud. Un `Pool` global de `pg` no puede reutilizar conexiones entre solicitudes en Workers.
+- Secretos del Worker en producción: `GEMINI_API_KEY` y `ADMIN_API_KEY`. En local van en `.dev.vars` (ver `.dev.vars.example`).
+- La base de datos se decidió en [0002](0002-prospectos-en-d1.md): los prospectos se guardan en Cloudflare D1.
 - `/api/save-slide-image` escribe en `public/obras/` y no funciona en Workers. Si se necesita, las imágenes deben ir a R2.
 - Los límites de tasa viven en la memoria de cada instancia del Worker, así que son aproximados.
 - Hay que apuntar `www.garam.com.co` y `garam.com.co` al Worker (dominio personalizado) y retirar el proyecto de Vercel.

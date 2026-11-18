@@ -16,7 +16,8 @@ export default defineConfig({
     env: {
       GEMINI_API_KEY: bindings.secret(),
       ADMIN_API_KEY: bindings.secret(),
-      DATABASE_URL: bindings.secret(),
+      // Base D1 de prospectos; migraciones en migrations/.
+      DB: bindings.d1({ id: "b453f836-8bd6-4031-a2e1-57be9db6e27b", name: "garam-leads" }),
     },
   },
 });

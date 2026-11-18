@@ -11,7 +11,9 @@
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "lint": "tsc --noEmit",
     "test": "tsx --test tests/api.test.ts",
-    "deploy": "npm run build && cf deploy --prebuilt"
+    "deploy": "npm run build && cf deploy --prebuilt",
+    "db:migrate:local": "cf d1 migrations apply b453f836-8bd6-4031-a2e1-57be9db6e27b --local",
+    "db:migrate": "cf d1 migrations apply b453f836-8bd6-4031-a2e1-57be9db6e27b"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
@@ -23,7 +25,6 @@
     "express-rate-limit": "^8.7.1",
     "framer-motion": "^13.4.6",
     "lucide-react": "^0.546.0",
-    "pg": "^8.23.1",
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
     "vite": "^8.3.0",
@@ -33,7 +34,6 @@
     "@cloudflare/vite-plugin": "^2.0.0-rc.1",
     "@types/express": "^5.0.6",
     "@types/node": "^22.14.0",
-    "@types/pg": "^8.23.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "autoprefixer": "^10.4.21",
