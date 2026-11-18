@@ -58,10 +58,10 @@ npm run dev             # http://localhost:5173
 | `npm run db:migrate:local` | Aplica las migraciones de `migrations/` a la base D1 local |
 | `npm run db:migrate` | Aplica las migraciones a la base D1 de producción |
 | `npm run lint` | Verifica tipos con `tsc --noEmit` |
-| `npm run test` | Pruebas de la API. Requieren `npm run dev` corriendo (o `BASE_URL`) |
+| `npm run test` | Pruebas de la API. Levantan su propio `cf dev` con una base D1 temporal y lo apagan al terminar. Con `BASE_URL` (y `ADMIN_API_KEY`) se prueban contra otro servidor |
 | `npm run clean` | Elimina `dist/` |
 
-> Las pruebas crean un prospecto de prueba en la base configurada. Ejecútalas contra una base de desarrollo.
+> Sin `BASE_URL`, las pruebas usan una base temporal que se borra al terminar. Con `BASE_URL`, crean un prospecto de prueba en la base de ese servidor: no las ejecutes contra producción.
 
 ## API
 
@@ -114,7 +114,14 @@ Los originales y los videos comprimidos no se suben a git. Los videos deben aloj
 
 - Se valida con los esquemas de `src/data/schema.ts`. El build falla si una obra no cumple (por ejemplo, un estatus fuera de la lista o un `id` repetido) o si una imagen referenciada no existe en `public/`. Un video ausente solo genera un aviso, porque los videos se alojan fuera de git.
 - Se generan desde `src/data/seo.ts`, y no se editan a mano: el canonical, `og:url` y las imágenes para redes de `index.html`, el JSON-LD, `robots.txt`, `sitemap.xml` y `llms.txt`. El dominio está en `SITE_URL`.
-- `public/_headers` marca con `X-Robots-Tag: noindex` las URL de `workers.dev`, para que solo se indexe `www.garam.com.co`.
+- `public/_headers` marca con `X-Robots-Tag: noindex` las URL de `workers.dev`, para que solo se indexe `www.garamconstructores.com`.
+
+## Dependencias
+
+- `package.json` fija versiones exactas (sin `^` ni `~`); `.npmrc` mantiene esa regla al instalar paquetes nuevos.
+- En `dependencies` solo van los paquetes que llegan al Worker o al navegador. Vite, sus plugins y el resto de herramientas de build van en `devDependencies`.
+- Auditoría de producción: `npm audit --omit=dev` debe dar 0 vulnerabilidades altas o críticas.
+- `npm audit` completo marca `picomatch` (usado por Vite al construir) por el aviso GHSA-fc5q-39xc-vjpf, que al 2026-11-18 no tiene versión corregida. No llega a producción. Actualizar Vite cuando salga la corrección.
 
 ## Despliegue
 

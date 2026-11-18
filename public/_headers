@@ -10,6 +10,6 @@
 	Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
 
 # Las URL de workers.dev, incluidas las vistas previas por versión, no se indexan:
-# el sitio canónico es www.garam.com.co.
+# el sitio canónico es www.garamconstructores.com.
 https://:version.:subdomain.workers.dev/*
 	X-Robots-Tag: noindex
