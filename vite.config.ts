@@ -13,7 +13,14 @@ const rootDir = typeof import.meta.dirname !== 'undefined'
 export default defineConfig(() => {
   return {
     // El build SSR del prerenderizado (scripts/prerender.mjs) no usa el plugin de Cloudflare.
-    plugins: [react(), tailwindcss(), ...(process.env.GARAM_PRERENDER ? [] : [cloudflare()])],
+    plugins: [react(), tailwindcss(), ...(process.env.GARAM_PRERENDER
+      ? []
+      : [
+          cloudflare({
+            // Las pruebas (tests/servidor-prueba.ts) usan una base D1 local temporal.
+            persistState: process.env.GARAM_STATE_DIR ? { path: process.env.GARAM_STATE_DIR } : true,
+          }),
+        ])],
     resolve: {
       alias: {
         '@': path.resolve(rootDir, '.'),

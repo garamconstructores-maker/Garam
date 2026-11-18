@@ -58,10 +58,10 @@ npm run dev             # http://localhost:5173
 | `npm run db:migrate:local` | Aplica las migraciones de `migrations/` a la base D1 local |
 | `npm run db:migrate` | Aplica las migraciones a la base D1 de producción |
 | `npm run lint` | Verifica tipos con `tsc --noEmit` |
-| `npm run test` | Pruebas de la API. Requieren `npm run dev` corriendo (o `BASE_URL`) |
+| `npm run test` | Pruebas de la API. Levantan su propio `cf dev` con una base D1 temporal y lo apagan al terminar. Con `BASE_URL` (y `ADMIN_API_KEY`) se prueban contra otro servidor |
 | `npm run clean` | Elimina `dist/` |
 
-> Las pruebas crean un prospecto de prueba en la base configurada. Ejecútalas contra una base de desarrollo.
+> Sin `BASE_URL`, las pruebas usan una base temporal que se borra al terminar. Con `BASE_URL`, crean un prospecto de prueba en la base de ese servidor: no las ejecutes contra producción.
 
 ## API
 
