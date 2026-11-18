@@ -1,5 +1,7 @@
 # Cabeceras de los assets estáticos (Workers Static Assets). Las respuestas de la API
 # las pone Express (src/server/app.ts); estas cubren las páginas y los archivos.
+# Cloudflare Web Analytics (medición de rendimiento real, P-13) inserta un script de
+# static.cloudflareinsights.com que envía datos a cloudflareinsights.com.
 # La CSP solo informa: pasa a Content-Security-Policy (bloqueo) en P-12, tras revisar los reportes.
 /*
 	X-Content-Type-Options: nosniff
@@ -7,7 +9,7 @@
 	Strict-Transport-Security: max-age=63072000
 	Permissions-Policy: camera=(), microphone=(), geolocation=()
 	X-Frame-Options: DENY
-	Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+	Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://cloudflareinsights.com; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
 
 # Las URL de workers.dev, incluidas las vistas previas por versión, no se indexan:
 # el sitio canónico es www.garamconstructores.com.
