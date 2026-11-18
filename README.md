@@ -114,6 +114,7 @@ Los originales y los videos comprimidos no se suben a git. Los videos deben aloj
 
 - Se valida con los esquemas de `src/data/schema.ts`. El build falla si una obra no cumple (por ejemplo, un estatus fuera de la lista o un `id` repetido) o si una imagen referenciada no existe en `public/`. Un video ausente solo genera un aviso, porque los videos se alojan fuera de git.
 - Se generan desde `src/data/seo.ts`, y no se editan a mano: el canonical, `og:url` y las imágenes para redes de `index.html`, el JSON-LD, `robots.txt`, `sitemap.xml` y `llms.txt`. El dominio está en `SITE_URL`.
+- Cada obra tiene su página, `/proyectos/<id>/`, generada en el build con la ficha abierta, su título, descripción, canonical, imagen para redes y JSON-LD (`WebPage` y migas de pan). Al abrir una ficha en el sitio, la URL cambia a la de la obra y Atrás la cierra. Las rutas están en `src/data/routes.ts`.
 - `public/_headers` marca con `X-Robots-Tag: noindex` las URL de `workers.dev`, para que solo se indexe `www.garam.com.co`.
 
 ## Dependencias

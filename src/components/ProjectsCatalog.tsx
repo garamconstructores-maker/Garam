@@ -10,6 +10,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { FadeIn } from './MotionReveal';
 import { CoverCarousel } from './CoverCarousel';
+import { projectPath } from '../data/routes';
 
 // Portafolio curado: obras que se muestran primero en el catálogo.
 const FEATURED_IDS = ['casa-33', 'casa-am', 'fendi', 'casa-blanca-galipan'];
@@ -207,10 +208,11 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                             <div className="font-mono tabular-nums text-brand-ink font-semibold">
                               {flagship.area}
                             </div>
-                            {/* Botón real: con teclado la tarjeta se abre desde aquí (Tab + Enter). */}
-                            <button
-                              type="button"
+                            {/* Enlace real a la página de la obra: los buscadores lo siguen y con teclado abre la ficha. */}
+                            <a
+                              href={projectPath(flagship.id)}
                               onClick={(e) => {
+                                e.preventDefault();
                                 e.stopPropagation();
                                 onSelectProject(flagship);
                               }}
@@ -219,7 +221,7 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                             >
                               <span>Ver Ficha Técnica</span>
                               <ArrowUpRight aria-hidden="true" className="w-3.5 h-3.5" />
-                            </button>
+                            </a>
                           </div>
                         </div>
 
@@ -289,10 +291,11 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                           <span className="font-mono tabular-nums text-brand-muted">
                             {project.area}
                           </span>
-                          {/* Botón real: con teclado la tarjeta se abre desde aquí (Tab + Enter). */}
-                          <button
-                            type="button"
+                          {/* Enlace real a la página de la obra: los buscadores lo siguen y con teclado abre la ficha. */}
+                          <a
+                            href={projectPath(project.id)}
                             onClick={(e) => {
+                              e.preventDefault();
                               e.stopPropagation();
                               onSelectProject(project);
                             }}
@@ -301,7 +304,7 @@ export const ProjectsCatalog: React.FC<ProjectsCatalogProps> = ({
                           >
                             <span>Ver ficha técnica</span>
                             <ArrowUpRight aria-hidden="true" className="w-3.5 h-3.5" />
-                          </button>
+                          </a>
                         </div>
                       </motion.div>
                     </FadeIn>
