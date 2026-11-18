@@ -1,0 +1,48 @@
+# Integración continua: cada PR y cada push a main pasan por tipos, build,
+# pruebas de API y auditoría de dependencias de producción antes de mergear.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    name: Tipos, build, pruebas y auditoría
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      # cf necesita Node 22.18 o superior.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci --no-audit --no-fund
+
+      - name: Tipos
+        run: npm run lint
+
+      # Incluye la validación del contenido (Zod e imágenes) y el prerenderizado.
+      - name: Build
+        run: npm run build
+
+      # Las pruebas levantan su propio cf dev con una base D1 temporal; no usan secretos.
+      - name: Pruebas de API
+        run: npm test
+
+      # Solo producción: picomatch (dependencia de build de Vite) no tiene corrección
+      # publicada todavía. Ver la sección Dependencias del README.
+      - name: Auditoría de dependencias de producción
+        run: npm audit --omit=dev --audit-level=high
