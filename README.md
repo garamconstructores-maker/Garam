@@ -106,6 +106,13 @@ Para agregar medios de una obra, sigue la guía en [docs/MEDIOS.md](docs/MEDIOS.
 
 Los originales y los videos comprimidos no se suben a git. Los videos deben alojarse en un servicio externo antes de publicarse.
 
+## Dependencias
+
+- `package.json` fija versiones exactas (sin `^` ni `~`); `.npmrc` mantiene esa regla al instalar paquetes nuevos.
+- En `dependencies` solo van los paquetes que llegan al Worker o al navegador. Vite, sus plugins y el resto de herramientas de build van en `devDependencies`.
+- Auditoría de producción: `npm audit --omit=dev` debe dar 0 vulnerabilidades altas o críticas.
+- `npm audit` completo marca `picomatch` (usado por Vite al construir) por el aviso GHSA-fc5q-39xc-vjpf, que al 2026-11-18 no tiene versión corregida. No llega a producción. Actualizar Vite cuando salga la corrección.
+
 ## Despliegue
 
 - El sitio y la API se despliegan como un Worker de Cloudflare con `npm run deploy`. Las claves de producción se cargan como secretos del Worker. Detalles en [docs/decisiones/0001-api-en-cloudflare-workers.md](docs/decisiones/0001-api-en-cloudflare-workers.md) y [docs/decisiones/0002-prospectos-en-d1.md](docs/decisiones/0002-prospectos-en-d1.md).
