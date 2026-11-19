@@ -116,6 +116,7 @@ export default function App({ initialProjectId = null }: AppProps) {
             obrasEl?.scrollIntoView({ behavior: 'smooth' });
           }}
           onOpenInquiry={() => openInquiry('hero')}
+          isPageHeading={!selectedProject}
         />
 
         {/* 01 · Projects Catalog Section - 11 Obras Completas */}
