@@ -22,11 +22,14 @@ import {
 interface ProjectDetailModalProps {
   project: Project | null;
   onClose: () => void;
+  /** "Quiero un proyecto como este": abre el formulario con esta obra como referencia. */
+  onRequestSimilar?: (project: Project) => void;
 }
 
 export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
   project,
   onClose,
+  onRequestSimilar,
 }) => {
   const [activeMediaIdx, setActiveMediaIdx] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -113,13 +116,24 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
         <div className="p-6 sm:p-10 overflow-y-auto space-y-8">
           
           {/* Main Title & Slogan */}
-          <div className="space-y-2 border-b border-brand-stone pb-6">
-            <h2 id="project-detail-title" className="font-editorial text-4xl font-normal tracking-tight text-brand-ink sm:text-6xl">
-              {project.title}
-            </h2>
-            <p className="text-base sm:text-lg text-brand-muted font-normal">
-              {project.subtitle}
-            </p>
+          <div className="flex flex-col gap-5 border-b border-brand-stone pb-6 sm:flex-row sm:items-end sm:justify-between">
+            <div className="space-y-2">
+              <h2 id="project-detail-title" className="font-editorial text-4xl font-normal tracking-tight text-brand-ink sm:text-6xl">
+                {project.title}
+              </h2>
+              <p className="text-base sm:text-lg text-brand-muted font-normal">
+                {project.subtitle}
+              </p>
+            </div>
+            {onRequestSimilar && (
+              <button
+                type="button"
+                onClick={() => onRequestSimilar(project)}
+                className="shrink-0 cursor-pointer rounded-md bg-brand-ink px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-copper"
+              >
+                Quiero un proyecto como este
+              </button>
+            )}
           </div>
 
           {/* Technical Spec Sheet Strip */}

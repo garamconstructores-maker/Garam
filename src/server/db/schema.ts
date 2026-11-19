@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 // Tabla de prospectos en D1 (SQLite). La migración vive en migrations/.
 export const leads = sqliteTable('leads', {
@@ -15,8 +15,21 @@ export const leads = sqliteTable('leads', {
   timeline: text('timeline').notNull(),
   comments: text('comments'),
   status: text('status').notNull().default('new'),
+  origin: text('origin'),
   consentAt: integer('consent_at', { mode: 'timestamp_ms' }).notNull().$defaultFn(() => new Date()),
 });
+
+// Embudo de contacto: un contador por día, evento y origen (sin datos personales).
+export const funnelCounts = sqliteTable(
+  'funnel_counts',
+  {
+    day: text('day').notNull(),
+    event: text('event').notNull(),
+    origin: text('origin').notNull().default(''),
+    count: integer('count').notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.day, t.event, t.origin] })],
+);
 
 export type Lead = typeof leads.$inferSelect;
 export type NewLead = typeof leads.$inferInsert;
@@ -32,6 +45,7 @@ export const leadExportColumns = [
   'location',
   'timeline',
   'comments',
+  'origin',
 ] as const;
 
 export type LeadExportColumn = (typeof leadExportColumns)[number];
