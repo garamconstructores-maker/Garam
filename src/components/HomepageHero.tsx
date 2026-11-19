@@ -7,6 +7,8 @@ import { responsiveSrcSet } from '../utils/responsiveImage';
 interface HomepageHeroProps {
   onOpenPresentation: () => void;
   onOpenInquiry: () => void;
+  /** Es el título principal de la página (h1). En la página de una obra, el h1 es el nombre de la obra. */
+  isPageHeading?: boolean;
 }
 
 const HERO_POSTER = '/obras/casa-33-garam.webp';
@@ -64,7 +66,10 @@ const HERO_STATS = [
 export const HomepageHero: React.FC<HomepageHeroProps> = ({
   onOpenPresentation,
   onOpenInquiry,
-}) => (
+  isPageHeading = true,
+}) => {
+  const HeroHeading = isPageHeading ? 'h1' : 'p';
+  return (
   <section
     id="inicio"
     aria-labelledby="homepage-hero-title"
@@ -114,13 +119,13 @@ export const HomepageHero: React.FC<HomepageHeroProps> = ({
         </FadeIn>
 
         <FadeIn direction="up" delay={0.12} distance={28}>
-          <h1
+          <HeroHeading
             id="homepage-hero-title"
             className="font-editorial text-5xl font-normal leading-[0.98] tracking-tight text-white text-balance sm:text-6xl lg:text-7xl xl:text-[5.25rem]"
           >
-            De la visión
+            De la visión{' '}
             <span className="block italic text-brand-copper-light">a la obra.</span>
-          </h1>
+          </HeroHeading>
         </FadeIn>
 
         <FadeIn direction="up" delay={0.2} distance={24}>
@@ -195,7 +200,8 @@ export const HomepageHero: React.FC<HomepageHeroProps> = ({
         </FadeIn>
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export default HomepageHero;

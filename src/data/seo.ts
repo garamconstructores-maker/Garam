@@ -74,8 +74,17 @@ export function buildHeadTags(path = '/', imagePath = '/og-image.jpg'): string {
 /** Título y descripción de la página de una obra (pestaña, buscadores y redes). */
 export function projectPageMeta(p: Project): { title: string; description: string } {
   const description = `${p.subtitle} ${projectSummary(p)}`;
+  // Google corta los títulos de más de ~65 caracteres: se usa la variante más completa que quepa.
+  const zone = p.location.split('·')[0].trim();
+  const category = p.category.split('/')[0].trim();
+  const candidates = [
+    `${p.title} · ${p.category} en ${p.location} | ${SITE_NAME}`,
+    `${p.title} · ${category} en ${zone} | ${SITE_NAME}`,
+    `${p.title} · ${category} | ${SITE_NAME}`,
+    `${p.title} | ${SITE_NAME}`,
+  ];
   return {
-    title: `${p.title} · ${p.category} en ${p.location} | ${SITE_NAME}`,
+    title: candidates.find((t) => t.length <= 65) ?? candidates[candidates.length - 1],
     description: description.length > 160 ? `${description.slice(0, 157).trimEnd()}…` : description,
   };
 }

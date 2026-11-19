@@ -118,9 +118,9 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
           {/* Main Title & Slogan */}
           <div className="flex flex-col gap-5 border-b border-brand-stone pb-6 sm:flex-row sm:items-end sm:justify-between">
             <div className="space-y-2">
-              <h2 id="project-detail-title" className="font-editorial text-4xl font-normal tracking-tight text-brand-ink sm:text-6xl">
+              <h1 id="project-detail-title" className="font-editorial text-4xl font-normal tracking-tight text-brand-ink sm:text-6xl">
                 {project.title}
-              </h2>
+              </h1>
               <p className="text-base sm:text-lg text-brand-muted font-normal">
                 {project.subtitle}
               </p>
